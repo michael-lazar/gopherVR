@@ -1,0 +1,37 @@
+Thanks to the following people, who have contributed to tracker one way
+or another, in alphabetic order:
+
+Oleg Bartunov (megera@sai.msu.su)						Minor bug report
+Mike Battersby													Linux, Makefile design
+Andrew A. Chernov (ache@astral.msk.su)					FreeBSD port, various
+Doug Cook (cook@sgi.com)									SG Wiz
+Liam Corner														original program
+Yannis Delmas-Rigoutsos (Yannis.Delmas@ens.fr)		nit-picking
+Matthew Donaldson												bug-report
+Roger Espel Llima (espel@ens.fr)							bug-report
+Nico Francois (nico.francois@scala.com)				permission to use ppdecrunch
+Loïc Grenié (Loic.Grenie@ens.fr)							bug-report
+Rolf Grossmann (grossman@informatik.tu-muenchen.de)NextStep port, ui cleanup
+Markus Gyger (mgyger@itr.ch)								hp port
+Steve Haehnichen (shaehnic@ucsd.edu)					first PC port
+Steven Hocking (sysseh@devetir.qld.gov.au)			Network audio port
+Joerg-Cyril Hoehle											bug-report
+Reinhard Katzmann												Amiga help
+Petri Kuittinen (eye@niksula.cs.hut.fi)				SG beta test
+Bo Kullmar (bk@kullmar.se)									bug-report
+Thomas R. Lawrence											old port to the macintosh
+Andrew Leahy (A.Leahy@st.nepean.uws.edu.au)			Dec port
+Kang-Jin Lee (lee@tengu.in-berlin.de)					bug-report
+Jim Leonard (trixter@trxhome.mwc.com)					useful discussions
+Cyrille Micheneau												volunteered some help
+Bruno Monsuez (Bruno.Monsuez@ens.fr)					OS/2 port
+Francis Mouthaud (u220@esigetel.fr)						much stuff
+Andreas Pahlsson (z94an0pa@isy.liu.se)					bug-report
+Pascal Rullier													volunteered some help
+Hannu Savolainen (hannu@voxware.pp.fi)					Linux port
+Frank M. Siegert (frank@miranda.tue.schwaben.de)	NeXTStep port
+Bjoern Stabell													hp port
+Dave Tiller (dtiller@cscsun.rmc.edu)					Solaris/sun incompatibilities
+Lukas Wunner													bug-report
+
+I'm sure I've forgotten some guys... Please excuse me !

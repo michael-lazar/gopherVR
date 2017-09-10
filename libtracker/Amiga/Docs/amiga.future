@@ -1,0 +1,52 @@
+The shape of things to come
+
+I don't think tracker will ever be finished...
+Every time I think I'm done with it, some new ideas come.
+
+Anyhow, the previous version was entirely line-oriented.
+This version now has a real graphical user interface,
+but, to keep with some of Dave Haynie's ideas, it's not
+quite real time yet... Yes, there are some times when
+tracker's user interface doesn't answer.
+Since I use a very simple model for handling interaction,
+I hope there is no nasty deadlock left, but I haven't tested
+it thoroughly enough...
+
+So the future is to add callback hooks everywhere to handle
+the user requests with more responsiveness.
+The future is also to add more controls to the user interface.
+After all, I've got an incredible amount of data and switchs
+about a module that I don't use at the time:
+global volume,
+volume on a per-instrument basis,
+volume on a track per track basis,
+non-linear volume scaling,
+on-the-fly transposition,
+switching instruments on/off...
+
+I also hope some other persons will endeavour to port it to other platforms
+like the Macintosh... if I have time, I'll build a simple GUI
+for X-Windows myself (and a friend is already in the middle of an OS/2 port).
+
+One other thing is that Fast Forward and Rewind (<< and >>)
+don't work quite as well as they should. When I got around to
+implementing my `virtual player' idea, they will work much better,
+and you won't differentiate tracker from a full CD player anymore !
+Except for much better control on the sound quality...
+
+Some other thing is (of course) other types of sample. I need a whole
+new type of audio handler for it, since 16 bit samples are not out of the
+question (rescaling, querying, and so on...). That will be a major project,
+I'm afraid.
+Why of course ? Well, MED modules need other type of samples, and I definitely
+would like to add channel-splicing :-):-):-).
+
+Some interesting experiments in the same vein would be to allow very big samples
+and load them on the fly when needed... Nothing is impossible there. Indeed, the
+buffered two-tasks model already implements most of the effort (just need to add
+a cache algorithm and a good loader... Maybe as another independent process):
+basically, it's exactly the same as our post-synchronized scroller window !
+
+Well, well, well. Enough rambling... 
+
+

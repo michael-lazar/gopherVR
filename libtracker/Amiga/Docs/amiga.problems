@@ -1,0 +1,50 @@
+Some known problems:
+
+- the user interface doesn't seem responsive at the end of modules.
+That's normal. The song is actually finished. You're listening to
+the buffered song. I'm trying to find a proper way to handle that.
+
+- the scroll window doesn't open when I ask for it.
+Performance reasons. The scroll display is only computed when you ask
+for the scroll window. Since the sound is buffered, you first have to
+listen to all the buffered sound before the scroll window appears.
+
+- song lists/loading song doesn't work as I expected.
+Doesn't work as I expect either, at least not all the time.
+Needs some cleanup...
+
+- I have 1.3 and tracker doesn't run.
+Upgrade...
+
+- I'm confused about the menu speed items.
+Their state don't acurately reflect what's going on, but PAL and NTSC
+work (once again, since the sound is buffered, there's some delay).
+Custom is just a provision for the future.
+
+- the sound filter is always off.
+Not implemented yet.
+
+- I've got a song which tracker doesn't play correctly.
+Send it to me, it's interesting !
+
+- tracker doesn't understand powerpacked modules.
+It doesn't need to. Install xpk and xfh and it'll work.
+
+- tracker is much bigger than some other players and takes up
+more memory.
+But it should work on every amiga, is cpu-efficient, and supports
+some unique features.
+   - plays lha modules
+   - transpose modules
+   - scroll-window, somewhat more readable than just plain ciphers.
+   - font-sensitive interface.
+
+- tracker loses some memory sometimes
+There seems to be a bug with the CON:.../AUTO/WAIT windows that stay around
+forever under the 3.1 beta I've got on my system. I haven't been able to check
+whether the problem stays under other system versions.
+Anyway, if the problem occurs:
+- not when you launch tracker the first time (since opening audio at first
+DOES consume some memory)
+- when you don't have any console window appearing.
+this is a real problem ! Do tell me about it !

@@ -1,0 +1,125 @@
+Release 4.27 (beta)
+* minor bug fixes in Arch/common.c. should work correctly on NeXt now.
+* xterm stuff cleaned up
+* ppunpack is now OFFICIALLY part of tracker. Nico HAS given his benediction.
+YOU MAY REDISTRIBUTE ppunpack AS YOU WISH !!!
+
+Release 4.26 (beta)
+* title in window title bar for xterms.
+* version number cleaned up, now shows up in exactly ONE place (Makefile)
+
+Release 4.25 (beta)
+* added remaining protracker 1.1 effect: invert loop (extended 15)
+* fixed up (mostly) loop command (extended 6)
+
+Release 4.24 (beta)
+* network audio port... probably not working yet.
+
+Release 4.22 (beta)
+* implemented vibrato/tremolo control.
+
+Release 4.20 (beta)
+* notion of data width introduced, fixed some problems (more or less)
+* corrected minor bug in Arch/Sparc/audio.c: used to modify the volume
+at exit.
+* some minor changes in commands according to the actual protracker code. 
+
+Release 4.19 (beta)
+* more sensible scrolling display
+* tremolo finally working
+* Rolf Grossman's patch -> cleaned up user interface, with less #defines.
+
+Release 4.18 (beta)
+* sparc features increased: -sync support, waiting at start for buffer 
+to fill for unhashed audio output.
+* lots of minor bugs everywhere fixed.
+* WARNING: oversample=0 (linear resampling) is probably broken right now
+
+Release 4.17 (beta)
+* cleaned up architectural stuff. Even faster.
+
+Release 4.16 (beta)
+* much better optimization of resample
+* optimization of the various audio.c files.
+
+Release 4.15 (beta)
+* added missing tremolo effect... gslinger now sounds correctly
+(I hope)
+* fixed up set finetune.... was not updated instantly enough
+
+Release 4.14 (internal)
+* powerpacker depacker
+
+Release 4.13 (full release)
+* cleaned up small bugs as compared to 4.11
+* much better technical documentation
+* upgraded amiga version to 4.13
+
+Release 4.11 (internal-beta)
+* implemented color ansi support
+* NeXt status: working with minor patch
+* linux status: working
+
+Release 4.8:
+* NOTE FOR PROGRAMMERS: output_samples size HAS changed to 23 bits,
+* to allow for 16 bit samples, oversampling, volume, and so on...
+* reorganized machine dependent code to Arch/
+* cleaned up Makefile
+* implemented buffered files (finally). Faster loading of some files
+* clutter of includes moved to defs.h 
+
+Internal release 4.7:
+* small bugfixes.
+* compiling now on other architectures: NeXT, OS9
+
+Release 4.3:
+* full amiga support. Good playing model.
+* rewrote Makefile.
+* minor options changes.
+* much easier to tinker with than the previous versions. hooks for future
+upgrades everywhere.
+* tracker 3.xx is no longer supported. I won't answer to bug reports 
+concerning it except to redirect you to the newer version.
+
+Release 3.19:
+from 3.11:
+* amiga support ! Finally.
+* solaris 2.2 support.
+
+Release 3.11:
+* general bug-fixes, plays some modules it goofed on (speed check, extended
+command loop now works).
+* repeat working better.
+* should be rather difficult to get cores out of it.
+* may fork when loading a new module, though not working satisfactorily yet.
+* almost readable scrolling display.
+* support for DECstations (thanks to Andrew Leahy (A.Leahy@st.nepean.uws.edu.au)
+* support for hpux (thanks to Bjoern Stabell (bjoerns@staff.cs.uit.no)
+* partial support for solaris
+
+Release 3.10:
+* linux: small bug-fix, 16 bit support
+* general: bug in finetune fixed
+
+Release 3.9:
+* background/foreground csh-aware mode, much cleaner termio.
+Release 3.7:
+* support for linux (thanks to Hannu Savolainen (hsavolai@cs.helsinki.fi)
+* small bug fix in termio: restore to a sane tty on exit.
+Release 3.6:
+* more efficient replay routine, works faster, all glitches finally suppressed
+(I hope).
+* more options, better integrated.
+* much cleaner source code.
+
+Internal Release 3.0:
+* tracker is aware of the sparcstation 10.
+* bug fix for command 5 (portamento slide), that now works like
+portamento. Mostly affects apocalypse module.
+* support for most protracker extended commands, including finetune.
+* dynamic adjustements to the output frequency, fast skip, much better
+user-response overall.
+* better runtime interface (without those strange signals sequences)
+* better screen output
+* audio flush on the sparc, don't have to wait 10sec+ to exit.
+

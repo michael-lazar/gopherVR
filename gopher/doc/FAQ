@@ -1,0 +1,78 @@
+----------------------------------------------
+Gopher/Gopherd FAQ
+$Id: FAQ,v 1.5 2002/03/19 17:51:18 jgoerzen Exp $
+
+This is the FAQ for gopher and UMN gopher.
+
+The latest version may be found at:
+
+gopher://quux.org/1m/devel/gopher/Downloads/LiveSource/gopher/doc/FAQ
+
+----------------------------------------------
+What is Gopher?
+
+Well, it's a bit complicated.  Gopher is all of these:
+
+1. A protocol for an Internet world-wide hierarchial filesystem;
+
+2. A client for using that protocol;
+
+3. A site containing information in that protocol.
+
+Let's elaborate:
+
+#1.  Gopher is a way to exchange information, similar to 
+HTTP that is used for the web.  Unlike HTTP, Gopher is simple and
+flexible yet rigid.  Gopher mandates a hierarchial view of things --
+just like you get on your own system with files and folders.
+Gopher extends your desktop file/folder concept to include the
+entire Internet.  You could have a folder whose contents come from
+20 different countries, and it would all be transparent.  Modern
+gopher browsers such as Nautilus support this very feature.
+
+#2.  The "UMN Gopher" client was developed at the University of Minnesota,
+the home of gopher.  Currently, the UMN Gopher client and UMN Gopherd server
+are maintained by John Goerzen and the Gopher Project; see
+gopher://quux.org/ for details.
+
+#3.  When you publish information with Gopher, you're said to run a
+"gopher site" similar to running a "web site".
+
+----------------------------------------------
+Where can I find gopher software?
+
+gopher://gopher.quux.org/11/Software/Gopher/Downloads
+
+If you do not already have Gopher, try:
+
+http://quux.org/hurg/hurg?selector=1%2FSoftware%2FGopher%2FDownloads&port=70&type=1&host=gopher.quux.org&username=Clients%2C+Servers%2C+and+Downloads
+
+Downloads of UMN gopher and other gopher projects hosted at quux.org are
+available at:
+
+gopher://gopher.quux.org/11/devel/gopher/Downloads
+http://quux.org/give-me-gopher/
+
+----------------------------------------------
+Is there a mailing list?
+
+Yes.
+
+See gopher://gopher.quux.org/00/devel/gopher/Mailing%20List.txt for details. 
+Or:
+
+To subscribe, send the text "Subscribe" in the subject of a mail to
+gopher-request@complete.org.  To post, send the message to
+gopher@complete.org.
+
+Archives are at http://www.complete.org/mailinglist/archives/ and at
+gopher://gopher.quux.org/1/Archives/Mailing%20Lists/gopher.
+
+----------------------------------------------
+[UMN] I'm having trouble compiling gopher(d)
+
+Where's gopherd?
+
+As of version 3.0.6, gopherd is deprecated.  Please use PyGopherd instead. 
+Information about PyGopherd is at http://quux.org/devel/gopher/pygopherd
+

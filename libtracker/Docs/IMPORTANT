@@ -1,0 +1,11 @@
+Some Copyright information: it's now forbidden to redistribute tracker
+as a stand-alone program. I'm fed up of getting incomplete bug-reports.
+Be sure to at least include the contents of the Doc directory with your
+version, and full directions to get back the source.
+THANKS.
+For ANY bug-report, DON'T FORGET TO INCLUDE *FULL* VERSION INFORMATION,
+including
+- tracker source version
+- the architecture on which you've compiled it.
+- any change from the standard distribution as available from aminet.
+

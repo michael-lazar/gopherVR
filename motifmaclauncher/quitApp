@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# quitApp
+# ScriptExec
+#
+# Created by Cameron Kaiser on 12/28/09.
+
+
+killall gophervr-mml
+killall gophervr-mml-wtf

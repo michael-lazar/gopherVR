@@ -1,0 +1,220 @@
+History:
+-------
+soundtracker was originally written by Karsten Obarsky for the amiga, a
+loong time ago. There have been numerous variants built upon it, the
+latest being protracker.
+
+Liam Corner had the original idea of a player for the sunstation, and
+proved that it was possible. 
+I wouldn't have thought of writing it myself, but armed with his original code, 
+I used my knowledge of the amiga tracker format to `add some improvements'. 
+Of course, I ended up rewriting the whole code. At that point, it ran on 
+silicon graphics indigos and suns.
+
+Steve Haehnichen wrote a soundblaster variant of that program which I have 
+finally added to the other versions. I did not have any news from him for
+sometime now, so I've decided to distribute it all. If it doesn't work as it is,
+it shouldn't be difficult to fix. 
+
+Hannu Savolainen sent me the linux version and helped me put it up to date.
+This one should work.
+
+Bjoern Stabell and Markus Gyger sent me some support for hpux, Andrew Leahy 
+for decs.
+Thomas R. Lawrence is still updating his port for the macintosh.
+
+Dave Tiller sent me the fix for solaris 2.2
+
+I finally got to port it BACK to the amiga. Full circle !
+Cyrille Micheneau and Pascal Rullier have volunteered to help me with that.
+Reinhard Katzmann succesfully compiled the preliminary release of tracker for
+the amiga.
+
+Some other people have helped me recently. 
+Mike Battersby sent me some interim bug-fixes for linux and a much better
+design for the makefile.
+Andrew A. Chernov is the guy behind the FreeBSD port.
+
+Rolf Grossman (grossman@informatik.tu-muenchen.de) did the NeXTstep port.
+
+Many thanks also to Matthew Donaldson, Joerg-Cyril Hoehle and Lukas Wunner 
+for sending me very useful bug reports and giving us an ever better 
+sounding player !
+
+Also, thanks to Loic Grenie, whose unix expertise I used extensively to
+get bg/fg routines to `work' (remaining bugs are mine, of course).
+
+There are obviously some people I may have forgotten or incorrectly cited in
+this text. I hope this is not too dire a problem.
+
+If you want to modify tracker or make it run on another machine, or correct
+problems, please do so.
+HOWEVER, IF YOU INTEND TO PORT IT TO ANOTHER MACHINE, I WOULD VERY MUCH
+APPRECIATE THAT YOU CHECK UP WITH ME FIRST. 
+There just might already be a port in progress, or I might have a newer
+version. Even so, I'd like to be able to maintain one source instead of
+a bazillion of version. My e-mail is Marc.Espie@ens.fr, not liable to change
+for some time.
+
+PRELIMINARY
+-----------
+As I am a lazy person, this file tends to change more slowly than the tracker
+program itself.  Some options may no longer exist, some may have been added.
+Many things may be different.  I mainly try to get out a working, efficient
+reasonably bug-free program.  If I manage to write corresponding docs, fine !
+If I don't, tough luck ! Anyhow, looking at the source file should provide
+you with enough insight for everything.
+--
+
+To build tracker, you should have a good look at the Makefile.
+Usually, just changing the install dir, and machine, then
+make install should be enough.  You may want to install tracker by hand,
+as it is trivial. 
+
+tracker is a giftware program, it is not guaranteed to do anything
+at all, either useful or useless. You've been warned, use it at your own risk. 
+This said, there doesn't seem to be any relevant bugs left in the current
+revision of code, and it is getting more and more stable.
+
+``Soundtracker'' is a family of music composition programs
+that exists on the amiga. The resulting data files (modules)
+have been appearing on ftp sites for some time now.
+
+For a machine with sufficient horsepower and some audio capability,
+it is possible to emulate the amiga audio hardware in real time,
+and play those modules.
+After that, you're only limited by the machine's capabilities. The
+sparc is a bit poor (8Khz sampling), in contrast with the indigo,
+which gives an almost perfect rendition of most modules.
+
+This release of tracker supports most amiga soundtracker file formats,
+and plays most of the existing effects, so that about 99% of the modules
+are output correctly.
+
+Here is some supplementary information.
+
+Compression:
+various compression methods are supported through pipes. There is a 
+simple-minded compression_methods file (check Makefile to see where you want
+to install it). Its format is:
+extension	command line in printf format.
+
+For instance, 
+.gz	gzip -dc %s
+(simple, isn't it ?)
+
+Environment variables:
+OVERSAMPLE can be used to control the accuracy of the reproduction.
+(The number of samples used to output one audio word).
+The higher, the better, but the more CPU it will use. The default
+value (1) is quite good at high frequencies, but not so for, for instance
+a poor sparc station's 8000 Hz. You can try, say, 2 or 3. After that,
+there won't be any noticeable improvement, and anyway, the program won't
+be fast enough to keep up with the output rate. Note that the program is
+special-cased for the default value (1), which should be significantly faster
+on some architectures.
+
+FREQUENCY can be used to set the audio output at a specific frequency
+(if the hardware supports it). The hardware will decide which frequency
+to actually use, according to other external parameters.
+
+MONO can be used to force mono output, which uses less
+cpu power.
+
+TRANSPOSE is the number of halftones to transpose each note (>0 is higher).
+Useful for low frequency sparcs which can't play some tunes accurately, or
+when you get bored...
+
+MODPATH can be set to be a path where you wish to look for mod files. This
+is a sh-styled path: setenv MODPATH dir1:dir2:...
+
+TRACKER_COMPRESSION can be set to override the default compression_methods
+file... Very useful when, for example, you want to use a binary fetched from
+the net.
+
+Command line switches:
+-stereo/-mono: 
+	switch between stereo/mono output
+-mix <percent>: 
+	for stereo output, decide how to mix left/right channels.
+	0 is spatial stereo, 100 is mono. The change tends to
+	be exponential, so you may want to experiment with values 
+	around 90+.
+-frequency <freq>:
+	ask for a given output frequency (in kHz). The normal output frequency
+	is a `normal' frequency for your machine. <freq> will be rounded
+	to a near available value.
+-oversample <n>:
+	where n is usually 1, 2 or 3. Try to use 1,2 or 3 sample values
+	to accurately render a given sample. Changing the frequency 
+	usually works better, but there might be cases where 2 or 3 gives
+	you a better rendering for a given module. Big cpu-eater.
+	0 is a special mode, called linear resampling. As a rule, if you have
+	a sufficient output frequency, resampling is not really necessary.
+-new/old/both:
+	select a soundtracker format, between new (31 instr), old (15 instr)
+	and both (auto-detect what's going on). You should only use it if
+	tracker gets very confused on a module.
+-picky:
+	do not allow for any problems in a module.
+-tolerant:
+	allow for many problems that would normally stop a module
+-repeats / -repeats <n>:
+	repeat each module n times. With no value (or a 0), repeat the
+	module forever.
+-looping
+	make the whole module list loop.
+-verbose:
+	show a sample listing for the module.
+-scroll:
+	scroll-display the module being played.
+-color:
+	use with terminals with color-ansi capability (e.g., kterm)
+	to get a colorful scroll.
+-sync:
+	try to synchronize that scroll display with what you hear.
+	Needs much cpu power to work correctly. Not implemented for many
+	architectures.
+-speed <n>:
+	change the base tempo to n. The normal value is 50 (PAL video
+	frequency). Some modules have been written on a buggy NTSC composer,
+	so you may wish to use -speed 60. Weird values like -speed 10 or
+	-speed 2000 are allowable. 
+	Note that the samples may sound a bit strange since you only change
+	the tempo there.
+-speedmode (normal|old|finefirst|normalfirst):
+	compatibily hack for old soundtracker tunes and various variants.
+-transpose <k>:
+	transpose the song up k half-notes. Doesn't work all the time.
+	Doesn't work right most of the time. For fun only. If k is
+	negative, it obviously transposes the song down.
+-start n:
+	start the module at pattern number n instead of number 0
+
+		Sample control:
+		--------------
+-cut 012...abcd:
+	suppress samples from the audio output.
+-add 012..abcd 
+	add samples to the audio output (exclusive with cut).
+
+
+Runtime control:
+	n: go to next song
+	p: restart current song/go to previous song
+	>: fast forward
+	<: rewind
+	S: NTSC tempo (60)
+	s: PAL tempo (50)
+	q
+	x
+	e: quit right away
+
+Send bug reports to Marc.Espie@ens.fr,
+
+encouragements and nice things to espie@ens.fr, zenith@dcs.warwick.ac.uk, 
+shaehnic@ucsd.edu, hsavolai@cc.helsinki.fi 
+--
+
+	Marc Espie, Paris, february 1995
+

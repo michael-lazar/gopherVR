@@ -1,0 +1,4 @@
+As of Version 4.5 onwards, amiga tracker uses wb2cli, so there should
+no longer be any path problem with workbench.
+Thanks go to Mike Sinz (for the idea) and Per Bojsen (for the Apipe ClonePath code)
+

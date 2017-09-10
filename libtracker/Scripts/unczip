@@ -1,0 +1,3 @@
+#!/bin/sh
+unzip -pq $1 `basename $1 .czip`.mod
+unzip -pq $1 `basename $1 .czip`.samp.shn|shorten -x - -

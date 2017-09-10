@@ -1,0 +1,26 @@
+/* sample config.h file for new ports */
+
+/* se:ts=3:sw=3: */
+#define IS_POSIX			/* OS uses POSIX getpgrp(void) */
+
+/* You have to define exactly one of USE_TERMIOS / USE_SGTTY */
+#define USE_TERMIOS		/* use POSIX termios */
+#undef USE_SGTTY			/* use old BSD tty modes */
+
+#define MALLOC_NOT_IN_STDLIB	/* include malloc.h */
+
+#define KLUDGE_TAG		/* unused right now. Do not change */
+
+#define USE_AT_EXIT		/* if your system has a working atexit() */
+
+#define SIGNED				/* if your chars are unsigned by default */
+
+typedef void *GENERIC;	/* define pointer to data */
+/* typedef char *GENERIC; */
+
+#define P(args) args		/* use full prototypes */
+/* #define P(x) ()	*/
+
+#define ID(x)				/* don't put RCS Id into programs (place hog) */
+/* #define ID(x)  LOCAL char id[]= x ; */
+

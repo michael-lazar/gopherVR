@@ -1,0 +1,163 @@
+%%About Gopher VR
+GopherVR is a 3D interface to Gopherspace.  It uses the Gopher
+protocol to get information from Gopher servers on the Internet.
+
+%%Using Help 
+Select a topic on the left hand side of the screen.  The
+help description will show up on the box at the right.
+
+%%Copyrights
+The Internet Gopher(tm) GopherVR software and documentation is
+copyright (c) by the Regents of the University of Minnesota.
+
+This version of GopherVR is maintained by Cameron Kaiser, and
+portions of this client written by him are copyright 2009, 2010
+Cameron Kaiser.
+
+Additional portions of this code after initial release were
+written by Paul Lindner and are copyright 2000-2002 Paul Lindner.
+
+On Mac OS X platforms, this package includes MotifMacLauncher,
+which is copyright 2003 Sveinbjorn Thordarson, copyright 2009
+Aaron Voisine, Marianne Gagnon, Simone Karin Lehmann, and
+copyright 2009-2010 Cameron Kaiser and is under the GNU Public
+License.
+
+Portions of the rendering engine are copyright 1991, 1992 The
+University of Melbourne.
+
+Portions of this client are Copyright 1992 by the Board of Trustees of
+the University of Illinois.
+
+Portions of the Motif code are Copyright 1989, 90, 91 O'Reilly and
+Associates, Inc.
+
+If required, the regex compatibility code is Copyright 2000 
+International Business Machines (IBM) Corporation.
+
+A whole heck of a lot of the audio/soundtracker code comes from Marc
+Espie (espie@ens.fr).  Have a look at libtracker/Doc/readmetoo.
+
+The Regents of the University of Minnesota have kindly rereleased this
+code under the GNU Public License (see COPYRIGHT in the source
+distribution). Their original license follows for historical purposes.
+
+-- NOT THE CURRENT LICENSE --
+
+Permission to use, copy, modify, and distribute this software and
+documentation for non-commercial purposes and without fee is hereby
+granted, provided that the University of Minnesota copyright notices
+and this permission notice appear in all copies, and that the name
+University of Minnesota not be used in advertising or publicity
+pertaining to this software and documentation without specific,
+written prior permission.
+The University of Minnesota makes no representations about the
+suitability of this software and documentation for any purpose.  It is
+provided ``as is'' without express or implied warranty.  Commercial
+use of Gopher requires specific permission from the University of
+Minnesota; contact the internet gopher development team at
+ <gopher@boombox.micro.umn.edu> 
+for further information.
+
+-- NOT THE CURRENT LICENSE --
+
+
+%%Basic Training: Movements
+You'll need to navigate through the scene to find items to select.
+
+Use the left mouse button to turn and move forward.  Click near the
+center of the scene.  Dragging to the left and right will turn your
+head.  Dragging up and down will move you into and out of the scene.
+
+You can also use the buttons at the bottom of the screen to rotate
+left, move forward and rotate right.
+
+Double clicking allows you to select objects, or jump towards
+an object.  If you click on a gopher object it will be highlighted in
+red, and the client will display it for you.  If you click on the
+ground or sky you will automatically jump forward. You can also use
+the middle mouse button to do this.
+
+To go back to the menu you came from, double-click any face of the
+red kiosk in the centre of the scene.
+
+If you press the space bar you will get an overview of the scene by
+jumping into the air and looking down.
+
+The Navigate menu also allows you to do some special movements.  
+
+   "Jump Up" will throw you into the air.  
+
+   "Overview" will jump up and turn your head down, allowing you to see 
+   a birds eye view of a scene.  (This is the same as pressing the
+   space bar)
+
+   "Jump Forward" jump and move you into the scene.
+
+   "Up" moves your eyepoint up in the air.  It's just like having stilts!
+
+   "Down" moves your eyepoint down in the air.
+
+If you get lost, pick Initial Viewpoint for a "safe" location.
+
+%%Basic Training: Objects
+There are many objects in GopherVR. Here are the common ones.
+
+  The red kiosk is the centre of every scene. If you select any
+  of its faces, it will return you to the previous menu.
+
+  Yellow objects access files. Some are text files, some are media,
+  and some are binaries you can download. The VR system will
+  automatically pick the most appropriate option.
+
+  Blue slanted objects access folders. They may be on this server
+  or on another server.
+
+  Green objects access URLs. They are usually Web links and will
+  open a browser.
+
+  Purple slanted objects allow you to query or search servers.
+
+%%Menu: File
+"Show Gopher Menu..."
+
+  If you accidentally close the menu window, this will restore it.
+
+"Open Location..."
+
+  Allows you to connect to a new site using a Uniform Resource Locator
+  (URL). Gopher URLs only please!
+
+"Print..."
+
+  Not currently operative.
+
+"Preferences..."
+
+  The options dialogue. Not currently operative.
+
+"Quit"
+
+  Exits the GopherVR application
+
+%%Menu: Bookmarks
+This will be supported in a future version of GopherVR.
+
+%%Menu: Edit
+The Edit menu is only supported in the text file viewer.  It does what you 
+would expect it to.
+
+  "Cut..."
+
+    Removes selected text and places it on the clipboard.
+
+  "Copy..."
+
+    Places a copy of the selected text in the clipboard.
+
+  "Paste..."
+
+    Inserts the contents of the clipboard at the current insertion
+    point.
+
+

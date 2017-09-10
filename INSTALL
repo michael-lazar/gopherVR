@@ -1,0 +1,59 @@
+Installing gophervr
+-------------------
+
+GopherVR is currently tested on Mac OS X 10.4-10.10 (PowerPC and Intel),
+SGI Irix 6.5 (MIPS), OpenBSD, Arch Linux (x86) and Ubuntu 10.04 (x86).
+
+1) First make sure you have a version of Motif available.  This comes
+   with most standard commercial unix systems.  For Linux you can
+   use Lesstif (http://www.lesstif.org) without any trouble.  Most Linux
+   distributions have it or can get it. Irix has Motif built-in. For OS X, use 
+
+	https://sourceforge.net/projects/openmotif-mac/
+
+   [the 10.5 version works fine on 10.6 and up]).
+
+2) Make sure you have a complete build environment.  That means
+   installing any development packages that you may need.  For example, on
+   Linux you might need to install XFree86-devel (for xmkmf) and
+   lesstif-devel (for the header files); Ubuntu users should install all the
+   compiler and printing packages, and your header files.
+
+   For Mac OS X, you need Xcode 2.5 or higher with xcodebuild, and X11.app 
+   (separate install for 10.4, included in 10.5 on up). Audio is not yet
+   supported. XQuartz (10.6+) also works.
+
+   For Irix 6.5, you need MIPSPro 7.4.4m and associated development headers.
+   gcc is not yet supported for Irix. Some features don't work yet on Irix,
+   including help and audio.
+
+3) Next type 'make' followed by your architecture.  The following systems are
+   recognized and are believed to work:
+
+     macosxu    - Mac OS X 10.4+ (Universal ppc/i386 binary)
+		  Your compiler must be capable of building PowerPC binaries.
+     macosx11   - Mac OS X 10.4+ (i386) through Yosemite
+		  *** NB: x86_64 doesn't work yet and will crash.
+		      Also, the motifmaclauncher Xcode project is only
+		      supported with Universal builds. PowerPC forever.
+     linux      - most versions of Linux (only tested on x86/x86_64)
+     irix       - Irix 6.5 (6.5.10+ tested)
+     openbsd    - OpenBSD (should work on most arches now)
+
+     These targets are untested and/or experimental.
+     cygwin     - Cygwin 1.7+ with gcc and Motif/dev packages
+     sol2sparc  - Sun Solaris 2 running on SPARC
+     sun4       - SunOS 4.x
+     irix5      - Irix 5.x
+
+6) Once everything is compiled go into the 2nd level gophervr
+   directory and type ./gophervr (or if you're on a Mac, grab the binary out
+   of motifmaclauncher/build/).
+
+   On Linux, copy gophervr.help to /usr/share/doc/gophervr/gophervr.help.
+
+   You may want to copy the futura.hfont to /usr/local/lib/hershey if you
+   plan to install the gophervr binary.
+
+Enjoy!
+

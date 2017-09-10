@@ -1,0 +1,17 @@
+Hi-priorities
+-------------
+saving files should default to $HOME (0.5.1)
+
+To-do "sometime"
+----------------
+overhead view in HUD
+bookmarks (bookmark window, if we choose to make it non-modal, should
+	save its window settings to a separate gophervrbmwindow file)
+implement prefs dialogue
+file:// ? (including for bookmarks?)
+use pref for the gopher image viewer/web browser instead of hardcoded
+use pref for the scaling factor
+Reticle and HUD showing selector of object in view centre
+Image, gif, sound, etc. shapes should have simple vector art
+text pop-in needs to be made relative to screen (farther out for bigger width)
+

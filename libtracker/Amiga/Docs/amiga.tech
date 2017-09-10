@@ -1,0 +1,67 @@
+This soundtracker player has some very interesting features, probably unique.
+- it's written entirely in C.
+- it's portable.
+- it goes through the OS for everything (except the audio filter toggling,
+but that's not provided for right now).
+- you can steal audio from under it without any trouble !
+- it reads archive files (like lha or zoo).
+- it buffers its sound output, so that it runs at about the same pace on
+every machine WITHOUT NEEDING ANY KLUDGE.
+
+The old version used the timer WAIT_EBLANK unit for all its timings and
+assumed everything was done fast enough that the new audio commands would 
+fall on the right beat. 
+
+This new version uses a two tasks model: task 1 fills messages telling
+what to do at a given time until it has no messages left and sends them
+to task 2. Task 2 peeks at the messages it received, wait for the right
+time to act on them, perform the sound changes, and send the message back
+to task 1.
+
+This offers lots of advantages.
+- every time-critical code is bundled in one simple routine that
+basically only has to wait for the right time and send very simple events
+to the audio device. I've upped the priority of this task to 90 since it
+waits most of the time.
+- tracker modules do not always need the same amount of processing power,
+the load might even vary (and does vary) during one given module. Using
+buffering means you equalize the load and you can then play very complex
+modules on a small amiga even with unoptimized code.
+For instance, verbose output with -show works on almost any amiga and any
+module unless you REALLY need too much processing power for it to work.
+- because of the buffer, we DO know about the samples we'll have to play
+with some look-ahead. It should be feasible to load them from normal ram
+to chip without much trouble...
+
+and some drawbacks too:
+- even though sas/c tries and help you, it's still difficult to debug 
+multithreaded programs. I've circumvented that difficulty by adding conditional
+code that split tracker into two distinct programs.
+- handshaking is easy to get wrong. Forgetting to take some messages into account
+can lead you to lose some, and end up with a deadlock when no message is left.
+- since audio output is buffered, the interface tends to react with some delay
+unless you program things carefully. I haven't even bothered implementing pause...
+Part of the problem is alleviated by using ReadEClock() to get some feedback
+in the necessary buffer.
+
+Another stupid problem I got in while programming the amiga support was using
+the standard WAIT unit of the timer.device, the one based on VBLANK.
+This was very stupid: using a timer unit of the same resolution (or about so)
+as the events I was wanting to measure. Since I got unlucky, it appeared to
+work correctly for quite some time... I'm usually looking at a rock-solid
+NTSC 60Hz display. 
+
+
+Some new add-ons: the event handling is completely decentralized. See events.c.
+This is an interesting way to bridge the gap between the usual programming model
+and the event-driven model.
+
+There is some problem with arq not recognizing requesters built through BuildEasyRequest()
+instead of directly EasyRequestArgs()'d, but it enables us to add a filerequester 
+(the reqtools one since amigados asl's doesn't support truly asynchronous operation...
+Major oversight from commodore).
+
+I haven't put any iconifying possibility in the main window. I feel that Menufy/Iconify
+provide very nicely for it... and they work for me, so why should I care. 
+Already tracker weighs in at 50Ko, that's a true monster of a player program !
+

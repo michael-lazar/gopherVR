@@ -1,0 +1,46 @@
+VERY IMPORTANT: `splitmod' is for personal use only.
+
+This program (splitmod) is Copyright 1993,1994,1995 by Marc Espie.
+It is forbidden to redistribute files obtained through the use of splitmod 
+to other people, and specifically to upload czip'ed files on the net.
+If you want to do that, you'll have to rewrite splitmod from scratch. Reuse
+of code from tracker/splitmod for that purpose is forbidden as well.
+
+In short:
+
+DO NOT REDISTRIBUTE FILES OBTAINED THROUGH THE USE OF SPLITMOD ON THE NET !!!
+
+WE DON'T NEED YET ANOTHER INCOMPATIBLE FORMAT !!!!
+
+
+
+
+Splitmod is a new utility provided for better compression of module
+files.
+
+A little while ago, a very nice utility called shorten appeared.
+It seems that shorten regularly beats general compression algorithms
+as far as digitized samples are concerned. Applying it to a raw module
+regularly gives the same or a better compression than lha or zip.
+Actually though, part of a module file is composed of samples, but the
+rest is a genuine score. 
+Hence splitmod, which does split a file (say file.lzh) into its score part
+(file.mod) and its sample part (file.mod).
+
+Afterwards, just make use of zip and shorten to build a special archive
+(file.czip) holding file.mod (compressed with maximum zip compression rate)
+and shortened file.samp.shn (not compressed at all with zip since it can't
+beat shorten...)
+
+The size reduction is usually drastic: between 10 and 30% from usual
+compressed formats !
+
+Two short scripts (czip and unczip) are provided. czip takes the output of
+splitmod and builds the czip archive. unczip is the necessary filter to
+be able to replay czip files from tracker.
+
+Note that you can still rebuild the original file from the czip archive through
+unczip. DON'T HESITATE TO USE IT BEFORE UPLOADING MOD FILES TO ANY BBS/FTP SITE.
+
+The default czip and unczip files are unix sh scripts, though an amiga execute
+version wouldn't be too difficult to build...

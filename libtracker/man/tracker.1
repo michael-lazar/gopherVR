@@ -1,0 +1,130 @@
+.TH TRACKER 1 "15 March 94"
+.SH NAME 
+tracker - play soundtracker modules on a Unix machine.
+.SH SYNOPSIS
+.B tracker 
+[\fB-help\fR]
+[\fB-new|old|both\fR]
+[\fB-speedmode \fR[\fBold | normal | finefirst | normalfirst\fR]]
+[\fB-verbose\fR]
+[\fB-quiet|scroll\fR]
+[\fB-sync\fR]
+[\fB-picky|tolerant\fR]
+[\fB-mono|stereo\fR]
+[\fB-mix \fIpercent\fR]
+[\fB-frequency \fIhertz\fR]
+[\fB-oversample \fIn\fR]
+[\fB-speed \fIhertz\fR]
+[\fB-transpose \fIhalftones\fR]
+[\fB-repeats \fInumber\fR]
+[\fB-loop\fR]
+[\fB-start \fIpattern\fR]
+\fI filename\fR ...
+.SH DESCRIPTION
+\fItracker\fR plays soundtracker music modules on a Unix machine.
+Soundtracker modules originated on the amiga, where several composing
+playing programs are available, that give results mostly compatible with
+each other. \fItracker\fR just plays the specified files in sequence 
+according with the current options.
+.SH OPTIONS
+Options can usually be abreviated, and are case-insensitive, so that
+\fB-Over\fR will stand for \fB-oversample\fR, for instance.
+.IP "\fB-help\fR"
+Displays a small useful help message.
+.IP "\fB-new|-old|-both\fR"
+Selects which soundtracker format to read. Old trackers had only room for
+15 samples, instead of the more modern ones with 31 samples. \fB-both\fR
+is the default behaviour, which tries to choose automatically between the
+old and the new format.
+.IP "\fB-speedmode \fR[\fBold|normal|finefirst|normalfirst\fR]"
+Selects the way speed commands are observed. \fBold\fR means that all speed
+commands change the tempo, \fBfinefirst\fR and \fBspeedfirst\fR mean that
+the finespeed (resp. normal speed) command takes precedence when two change
+speed commands occur on the same pattern position, \fBnormal\fR gives you the 
+default behaviour, where both are obeyed.
+You don't have to understand how this option works to use it. 
+If a module gives you some trouble, fiddling with this option may just work.
+.IP "\fB-verbose\fR"
+Shows a dump of the module samples section on loading.
+.IP "\fB-quiet|-scroll\fR"
+Selects whether a scrolling event table is displayed while the module is
+played. Default is to stay quiet.
+.IP "\fB-sync\fR"
+Tries to keep the audio output in sync with the scrolling display at the
+expense of more processor power.
+.IP "\fB-picky|-tolerant\fR"
+Selects \fItracker\fR's behaviour with regard to erratic problems in some
+modules. If you select \fB-picky\fR, only really clean modules will be
+played. If you select \fB-tolerant\fR, almost anything will get through
+tracker, including pure binary files not related with modules which will
+sound as so much white noise. Default behaviour lies somewhat in between.
+.IP "\fB-mono|-stereo\fR"
+Selects monaural or stereo output (provided your system has stereo capability).
+Keeping in mind that some amiga composers don't have stereo output, some modules
+will seem to float between the speakers when played in stereo. Also, stereo
+needs twice the output bandwidth and can consume much more cpu power.
+.IP "\fB-mix \fIpercent\fR"
+Sets amount of mixing between the left and right channels in stereo mode to
+\fIpercent\fR.
+Varies between 0 percent (spatial stereo) to 100 percent (monaural).
+.IP "-frequency \fIhertz\fR"
+Sets output resampling frequency to \fIhertz\fR, in hertz. That frequency
+can be clipped according to your audio equipment ability. The useful range
+lies between 8000 and 48000 hertz. It's useless to go any higher since
+the amiga is limited at about 33000 hertz, and the human ear doesn't know
+the difference anyway. Default depends upon your equipment.
+.IP "-oversample \fIn\fR"
+Sets oversampling to \fIn\fR. Resampling is used to pitch the sampled sounds
+at the right frequency. Oversampling can be used to smooth out aliasing
+problems, at the cost of more cpu power. Useful values lie between 2 and 4.
+Defaults to no oversampling.
+.IP "-speed \fIhertz\fR"
+Sets playing speed to \fIhertz\fR ticks per second. The default value is 50,
+but 60 may be appropriate for pieces  composed in the united states.
+Note that changing the playing speed does not change the pitch.
+.IP "-transpose \fIhalftones\fR"
+Transposes each note of the module by \fIhalftones\fR halftones up. This
+migh not work with some modules, or give out strange results since some effects
+will be approximate.
+.IP "-repeats \fIn\fR"
+Repeats each module \fIn\fR times before playing the next. Default is to play
+each module once. \fI0\fR makes the next module play indefinitely.
+.IP "-loop"
+Repeats the whole module list. Together with repeats, this is a dumb jukebox.
+Each module is played \fIn\fR times. Then it starts again.
+.IP "-start \fIpattern\fR"
+Starts playing module at pattern number \fIpattern\fR instead of the default
+0.
+.SH RUNTIME COMMANDS
+At play time, some keystrokes effect a limited control on tracker.
+.IP n
+Skip to next module.
+.IP p
+Skip to previous module / restart current module.
+.IP "x, e, q"
+Exits.
+.IP s
+Set speed to 50.
+.IP S
+Set speed to 60.
+.IP >
+Skip to next pattern in current module.
+.IP <
+Restart current pattern / Skip to previous pattern.
+.IP ?
+Toggle event scroller on.
+.IP !
+Toggle event scroller off.
+.SH SEE ALSO
+An Amiga. You just \fIhave\fR to see one.
+.SH BUGS AND FEATURES
+Since the soundtracker format is not a real format at all, some music
+modules may not sound as originally intended.
+
+\fItracker\fR only supports soundtracker modules for the time being, not 
+soundtracker songs with external samples, nor MED or TFMX or StarTrekker8
+nor any other amiga-originated format.
+
+Send all complaints/praise/real bug reports to Marc.Espie@ens.fr
+.SH AUTHOR
+Marc Espie

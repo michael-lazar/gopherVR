@@ -1,0 +1,28 @@
+# start of Imakefile
+
+CC		= gcc
+CFLAGS		=  -g -O3 -I../gopher -I../gopher/object -I../libvogl/src -I/Applications/OpenMotif21/include -I/opt/X11/include -mmacosx-version-min=10.4 -arch i386
+LDOPTIONS	=
+LDLIBS		= -L/Applications/OpenMotif21/lib -L/usr/X11R6/lib
+EXTRA_LOAD_FLAGS=
+RM		= rm
+CP = cp
+
+BURROWOBJS = burrower.o menus.o lcube.o globals.o text.o \
+             gopherto3d.o motiftools.o dialogs.o helpdiag.o \
+             vogltools.o parse.o parse_geom.o parse_nff.o error.o \
+             compat_regex.o gophwin.o \
+             ../lib/libvogl.a    ../lib/libhershey.a ../lib/libtracker.a \
+             ../gopher/object/libgopher.a
+
+all: gophervr
+
+gophervr: $(BURROWOBJS)
+	$(RM) -f $@
+	$(CC) $(CFLAGS) -o $@ $(BURROWOBJS) $(LDOPTIONS)  $(LDLIBS) -lXm -lXt -lX11 -lm $(EXTRA_LOAD_FLAGS)
+	$(CP) futura.hfont gophervr.help ../motifmaclauncher/
+	$(CP) gophervr ../motifmaclauncher/gophervr-mml
+
+clean:
+	$(RM) -f gophervr gophervr.gz *.o
+

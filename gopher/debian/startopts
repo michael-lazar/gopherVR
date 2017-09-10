@@ -1,0 +1,36 @@
+# Put options for gopherd in here.  Set options to "" to not set
+# or follow the comments.  If chroot is enabled, you wiill not be able
+# to use decoders unless you copy them under your gopher root.  The
+# same goes for calling other scripts, and there may be logging
+# difficulties.
+
+# Set DONTCHROOT to -c if you don't want to use chroot.
+
+# DONTCHROOT="-c"
+DONTCHROOT=""
+
+# The username that you run gopher as.  Leave blank to run as root.
+
+# USEUID=""
+USEUID="-u gopher"
+
+# The option file for gopher.
+
+OPTIONFILE="-o /etc/gopherd/gopherd.conf"
+
+# Logging.  Set to the empty string to disable.
+
+#LOGGING=""
+LOGGING="-l /var/log/gopherd.log"
+
+# The home for gopher.
+
+GOPHERHOME="/var/gopher"
+
+# Gopher's port.
+
+GOPHERPORT="70"
+
+# Any other options to pass along.
+
+OTHEROPTS=""

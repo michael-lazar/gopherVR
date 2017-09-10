@@ -1,0 +1,43 @@
+OpenMotif
+in gopher: ./configure, then make in gopher/object (you only need
+	libgopher.a)
+
+Installing gophervr
+-------------------
+
+1) First make sure you have a version of Motif available.  This comes
+   with most standard commercial unix systems.  For Linux you can
+   use Lesstif (http://www.lesstif.org) without any trouble.  Most linux
+   distributions have it.
+
+2) Make sure you have a complete build environment.  That means
+   installing any development packages that you may need.  For example on
+   linux you might need to install XFree86-devel (for xmkmf) and
+   lesstif-devel (for the header files..)
+
+3) You will need an active, built, UMN gopher tree.  GopherVR uses
+   this code to fetch resources from the network.
+
+4) Link the gopher tree to the top level of the GopherVR tree.  If
+   your gopher source tree was at /home/fred/source/gopher-3_0_1 you would
+   execute the following command:
+
+     ln -s /home/fred/source/gopher-3_0_1 gopher
+
+5) Next type 'make' followed by your systemname.  The following systems are
+   recognized (but not necessarily tested)
+
+     linux      - most versions of linux
+     sol2sparc  - Sun Solaris running a sparc CPU
+     sun4       - SunOS 4.x
+     irix5      - SGI's old os.  May work for later versions of irix..
+
+6) Once everything is compiled go into the 2nd level gophervr
+   directory and type ./gophervr
+
+   You may want to copy the futura.l file to /usr/local/lib if you
+   plan to install the gophervr binary.
+
+Enjoy!
+
+

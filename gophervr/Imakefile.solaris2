@@ -1,0 +1,19 @@
+
+SYS_LIBRARIES 	= -lXm -lXt -lX11 -lm 
+#CDEBUGFLAGS 	=  -g -O
+#CDEBUGFLAGS 	=  -O
+#CC		= gcc
+LOCAL_LDFLAGS	= -L/usr/dt/lib -R /usr/dt/lib:/usr/openwin/lib:/usr/lib
+INCLUDES	= -I../gopher -I../gopher/object -I../libvogl/src
+
+BURROWOBJS = burrower.o menus.o lcube.o globals.o text.o \
+	     gopherto3d.o motiftools.o dialogs.o helpdiag.o \
+             vogltools.o parse.o parse_geom.o parse_nff.o error.o \
+	     gophwin.o \
+             ../lib/libvogl.a    ../lib/libhershey.a \
+	     ../lib/libtracker.a  ../gopher/object/libgopher.a ../lib/libtracker.a
+
+
+AllTarget(gophervr)
+NormalProgramTarget(gophervr, $(BURROWOBJS),,,-lXm -lXt -lXext -lX11 -lm -lgen)
+

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# This is our chance to catch prerequisite failure before MML's event handlers
+# make it impossible for us to interactively display dialogue boxes. If we are
+# going to throw an error, we MUST do it here. Cameron Kaiser
+
+# Check that there is a /usr/X11R6 or /usr/X11.
+test -d /usr/X11R6 || test -d /usr/X11 || exit 13
+
+# Check for OpenMotif and X11
+# We require the Floodgap version as of 0.5.1.
+test -d /Applications/OpenMotif21 || exit 12
+
+# Get X11 up and running right away in the background so we can control it.
+# Prefer XQuartz if it exists.
+test -d /Applications/Utilities/XQuartz.app && open /Applications/Utilities/XQuartz.app && exit 10
+
+test -d /Applications/Utilities/X11.app && open /Applications/Utilities/X11.app && exit 0
+exit 11

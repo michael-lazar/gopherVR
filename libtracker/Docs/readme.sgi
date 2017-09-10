@@ -1,0 +1,3 @@
+From irix 5.3 up, the audio stuff comes with the compiler (again).
+If you have problems compiling tracker because it doesn't find audio
+files, check and upgrade your OS.

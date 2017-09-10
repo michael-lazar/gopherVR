@@ -1,0 +1,7 @@
+#!/bin/sh
+a=`basename $1 .mod`
+a=`basename $a .samp`
+zip -9 $a.czip $a.mod
+shorten -t s8 $a.samp
+zip -n .shn $a.czip $a.samp.shn
+

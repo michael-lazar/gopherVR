@@ -1,0 +1,108 @@
+Readme for the hp3 port.
+-----------------------
+[ NOTE: this is still undergoing development, and will probably be
+  enhanced, as some parts don't work very well.  ]
+
+     The is a port of tracker, version 3.19, to HP-UX 7x5 machines with
+audio devices that can handle 16-bit CD-quality stereo audio.  Tracker
+plays Amiga MOD files, which are generally of much higher quality than
+most computer music that most people have heard (however, MOD files
+still aren't excellent in terms of sound quality -- they are merely
+"very good").
+
+     Note that you must have an audio device that supports stereo and
+16-bit data.  Other audio output devices are not supported, although
+support may be added in the future.
+
+     You also need HP-UX 9.01 to use this program, and you must have set
+up audio services on your 7x5 workstation.  See the audio services
+manual to see how to set this up.
+
+
+***** Quickstart instructions:
+
+1. Put these files in some convenient directory.  The tracker binary
+   contains no hard-coded paths, and can be placed anywhere.
+
+2. The files whose names end with ".mod" are Amiga "MOD" files, which
+   contain instructions on how to play a song.  Each .mod file is one
+   song.
+
+3. To play a song to the headphone jack, do (for example):
+
+	tracker -volume -20 -mix 40 boesen.mod
+
+   (You may have to add paths to the tracker binary or to boensen.mod)
+
+   If you want the song to be output to the internal speaker, do:
+
+	tracker -speaker -volume 0 -mix 40 boesen.mod
+
+   IMPORTANT: DO NOT USE A VOLUME LEVEL OF ZERO (0) IF YOU ARE LISTENING
+   USING HEADPHONES.  A VOLUME LEVEL OF ZERO IS LOUD, AND COULD
+   CONCEIVABLY CAUSE DAMAGE TO YOUR HEARING.  Frankly, you probably
+   shouldn't use anything above -5 if you are listening using
+   headphones.
+
+4. There are three .mod files in this distribution.  They are among the
+   best that I've heard, and represent a wide range of musical tastes:
+
+	boesen.mod	-- Piano (harpsichord???).  Sounds like a
+			   barroom piano player.
+
+	crystalh.mod	-- Perhaps the most famous Amiga mod file.  I
+			   can't describe this.  A poor description
+			   would be a combination between rock and new
+			   wave music.
+
+	xmas.mod	-- This sounds like a drunken rock DJ's idea of
+			   Christmas Muzak h*ll.  Still, it's quite
+			   impressive.
+
+
+***** Other notes:
+
+1. The volume is specified in dB, and the default volume setting is
+   -20dB.  Note that setting the volume to -5dB and higher could
+   conceivably cause damage to your hearing if you listen to mod files
+   using a headphone.
+
+2. After running tracker, X-Windows (vue) can no longer beep.  I have no
+   idea why, although I'm looking into this.
+
+
+***** Here's the usage information:
+
+-------------------------------------------------------------------------------
+Usage: tracker [options] filename [...]
+-help               Display usage information
+-quiet              Print no output other than errors
+-picky              Do not tolerate any faults (default is to ignore most)
+-tolerant           Ignore all faults
+-mono               Select single audio channel output
+-stereo             Select dual audio channel output
+-verbose            Show text representation of song
+-repeats <count>    Number of repeats (0 is forever) (default 1)
+-speed <speed>      Song speed.  Some songs want 60 (default 50)
+-mix <percent>      Percent of channel mixing. (0 = spatial, 100 = mono)
+-new -old -both     Select default reading type (default is -both)
+-frequency <freq>   Set playback frequency in Hz
+-oversample <times> Set oversampling factor
+-transpose <n>      Transpose all notes up
+-scroll             Show what's going on
+-sync               Try to synch audio output with display
+-speaker            Output audio to internal speaker (HP-UX only).
+-volume <n>         Set volume in dB (HP-UX only).
+
+RunTime:
+e,x     exit program
+n       next song
+p       restart/previous song 
+>       fast forward
+<       rewind
+S       NTSC tempo       s      PAL tempo
+?       Switch between normal and scroll mode
+-------------------------------------------------------------------------------
+
+     -- Darryl Okahata
+	darrylo@sr.hp.com

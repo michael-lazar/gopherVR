@@ -1,0 +1,37 @@
+Copyright (C) 1991-2000  University of Minnesota
+Copyright (C) 2000-2002  Paul Lindner
+
+*Note* some libraries distributed here may have different licenses
+       please look at them individually.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+
+---------------------------------------------------------------
+This is a copyright for part of this package, not sure for which?
+
+
+	   Copyright (C) 1991, 1992 The University of Melbourne.
+
+	       Department of Engineering Computer Resources.
+
+	
+	This programme source code may be copied or distributed in any
+	medium or modified provided each copy or modified copy retains
+	this copyright notice and the disclaimer that this software is
+	distributed without any warranty implied or otherwise that it
+	is error free and that it meets the recipients requirements.
+
+compat_regex.c (only needed on some platforms) is IBM Public License.

@@ -1,0 +1,301 @@
+File format
+-----------
+
+Offset
+---------------------------------------
+  0		  20 bytes			Song Name (9)
+
+ 20	     22 bytes			Sample name
+ 42		   1 word			sample length (2)
+ 43			1 byte			finetune (3)
+ 44		   1 byte			volume (4)
+ 46		   1 word			looping start point
+ 48		   1 word			looping length
+ 			 ---------
+		     30 bytes (1)
+
+20+30*n	   1 byte			length of song (5)
+21+30*n	   1 byte    		number of patterns to load (6)
+22+30*n   128 bytes			pattern indices (7)
+
+1080		   4 bytes			signature (31 samples modules only)
+
+150+30*n 1024 bytes		   each pattern (10)
+
+150+30*n                   sample data (8)
++1024*p
+
+Notes
+-----
+(1) There are 15 sample info entries in old soundtracker files, 31 in newer
+protracker/noisetracker ones. The difference lies in the signature.
+Valid signatures are M.K. / M!K! (for Mahoney & Kaktus), FLT4/FLT8 for 
+startrekker modules.
+(2) Sample length, looping start point, looping length is normally stored
+as a number of words. Occasionally, in very old modules, the looping start
+point might be stored in bytes (case in point: kawai-k1). Checking
+looping start point + looping length against sample length might discover
+the problem.
+(3) Finetune does only exist for protracker modules: if the signature isn't
+M.K./M!K!, it should be 0. Normal values are 0-15. See below for a discussion
+of finetunes. Signature M!K! should only occur if the number of patterns is
+greater than 64.
+(4) This is the sample default volume, when no specific values have been
+given. Normal values are 0-64. Some songs include out of range values.
+(5) Range 1-128
+(6) Do not trust this byte ! Very old trackers used it to indicate the number
+of pattern indices, so it's set to 127 by protracker to enable old trackers
+to load this module. Noisetracker uses this byte for restart.
+(7) This is a sequencing order: like in play pattern #2, then #4, then #2
+again, and so on...
+(8) Sample data is given for each existing sample. Non-existing samples have
+a length of 0 or 1 (usually 1).
+- sample values are signed bytes, in 2-complement notation. Each sample length
+is a multiple of 2 in bytes.
+(9) Song names and sample names will be converted to a null-terminated string.
+Be very careful as to what to allow there...
+(10) We use the highest pattern number in the pattern indices table to
+determine the number of patterns p to load. Older trackers saved it as
+`number of patterns to load'.
+
+Decoding pattern info
+---------------------
+Each pattern holds 64 sets of 4 events, one for each amiga track, numbered 
+0 to 3 in the usual amiga way (0-3: left channels, 1-2: right channels).
+The four bytes per event are to be decoded as follows:
+
+ _____byte 1_____   byte2_    _____byte 3_____   byte4_
+/                \ /      \  /                \ /      \
+0000          0000-00000000  0000          0000-00000000
+
+Upper four    12 bits for    Lower four    Effect/parameters
+bits of sam-  note period.   bits of sam-
+ple number.                  ple number.
+
+Sample number should be in the range 0-31... anything else is an error, and
+should be flagged as such. 
+For standard protracker modules, the note period can be converted to a note n
+with the following lookup table:
+  C-1 to B-1 : 856,808,762,720,678,640,604,570,538,508,480,453
+  C-2 to B-2 : 428,404,381,360,339,320,302,285,269,254,240,226
+  C-3 to B-3 : 214,202,190,180,170,160,151,143,135,127,120,113
+older tracker modules may use highly non-standard periods.
+These pitch values ARE amiga-dependent. See appendix for further details.
+
+The effect command has two parts:
+an effect and parameters. You should actually decode it as three independent
+nibble: e (effect) phi (parameter, hi-part), plow (parameter, low-part).
+The interpretation is very dependent of the actual command involved. In many
+cases, phi and plow are read as a single byte parameter (para=phi<<4 | plow)
+
+About tempo
+-----------
+The player uses two tempo values: fundamental tempo (t1) and fine tempo (t2,
+invention of protracker).
+By default, t1=6 and t2=125.
+A tick occurs with a frequency of 50*t2/125 Hz (some specific tracker tunes
+have been developped on NTSC machines with a buggy tracker and the frequency
+is 60*t2/125 Hz in that case).
+
+The basic play-sequence takes t1 ticks:
+0st tick: read new series of event and applies them. Do NOT apply on-going
+effects (violent contrast with MED).
+1nd to t1-1th ticks: apply effects.
+then start again.
+
+About finetunes
+---------------
+Finetune is a weird invention of protracker. Since it is used very often,
+we can't avoid it.
+
+It must be decoded as follows:
+Value:    0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+Finetune: 0 +1 +2 +3 +4 +5 +6 +7 -8 -7 -6 -5 -4 -3 -2 -1
+
+(this is actually two-complement value, but over a nibble, which is
+a bit unusual). 
+Its interpretation is as follows: an instrument with a current finetune of f
+should be played offset by f/8 halftones up.
+In the end, to find the correct pitch to play a note at, you take the note 
+period AS STORED IN THE TABLE WITH f=0, convert it to a note value, and then
+offset it to finetune f, compute the correct pitch [look it up] and play the
+note. Loading a sample (as in sample number != 0) will obviously update the
+finetune for the corresponding channel. There is also an extended command to
+change a sample finetune without loading a new sample (see module crystal_rain
+for instance).
+
+About sample numbers and note periods
+-------------------------------------
+There has to exist a separate automaton for each of the four (eight ?) channels
+of a protracker song. To have a sample number != 0 means to load
+a number of parameters from the sample information:
+- its default volume (special case: volume command)
+- its finetune (special case: extended finetune command)
+Likewise, to have a note period !=0 means to change the note period 
+immediately, except for the tone portamento and portamento-slide commands.
+
+Effects
+-------
+0 Arpeggio/No effect
+if phi == 0 and plow == 0, the note sounds normal
+else, the pitch changes at each tick, cycling through notes n, n+phi, n+plow
+at each tick (phi and plow in half-tones up) (in this order)
+(previous portamento effects will be forgotten, since a note value is needed)
+
+1 Portamento up
+slide the note pitch up from the current pitch at the rate of para each tick.
+There normally is an upper boundary of B-3/pitch 113.
+
+2 Portamento down
+slide the note pitch down from the currenty pitch at the rate of para each tick.
+There normally is a lower boundary of C-1/pitch 856.
+
+3 Tone portamento
+slide the note pitch from the current pitch to the note pitch at the rate
+of para each tick. You can keep on sliding without having to specify a new
+para nor note. 
+The goal is reset to 0 when reached, so if you reach the note, no tone
+portamento without a goal will have an effect.
+
+
+4 Vibrato
+phi is the speed of the vibrato and plow the depth of the vibrato.
+values of 0 for phi or plow just mean to keep the previous rate.
+
+the basic vibrato waveform is a sine waveform.
+It can be changed to square, or rampdown.
+
+Here are the actual shapes used, with origin et all.
+
+
+
+    ****                     ********                     **
+  **    **                                              **
+ *        *                                           **
+*          *                                        **       
+            *        *                                          **
+				 **    **                                         **
+				   ****                  *******                **
+
+	Sine 0                     Square 1                Rampdown 2
+(see extended 4 for a detailled discussion of some aspects of that effect)
+
+The resulting waveform has an amplitude of 2*depth, e.g., its values are in 
+the range [-2*depth, 2*depth], and its full period is 64/speed ticks.
+
+The position in the waveform is reset at each and every new note on the 
+channel.
+
+
+5 Tone-portamento + Volume slide
+Continue the current tone portamento while applying volume slide.
+The parameters are used for the volume slide. The tone portamento parameters
+currently in effect still apply.
+
+6 Vibrato + volume slide
+Exactly like command 5.
+
+7 Tremolo
+just like vibrato except it affects the volume instead of the pitch.
+Note that the amplitude is TWICE that of vibrato as per protracker 1.1 source.
+Also note that there is a range check since volume must stay in 0,64 range.
+
+9 Set Sample offset
+play the sample from an offset instead of from the start. The offset (in bytes)
+is para * 256. If para is null, we use the last para instead.
+If offset exceeds the sample length, just play a null sample
+
+10 Slide volume
+if (phi !=0 ) slide the volume up by phi each tick,
+else slide the volume down by plow each tick.
+Note: phi and plow can be zero, there will simply be no volume change.
+
+11 Far jump/Position jump
+The next events will be read from pattern index para instead of
+the normal position. para has the normal range 0-127... protracker
+code can be confusing since it is somewhat confused and intricate there.
+
+12 Set volume/Volume change
+Set volume for the associated channel to para. 
+
+13 Small jump/Pattern break
+The next events will be read from the next pattern starting at
+position phi*10+plow instead of 0. (for strange reasons, we have a BCD value
+here). Values >=64 are reduced to 0 !
+
+14 Extended command
+phi is interpreted as a secondary command number. See below.
+So the parameter is actually plow for these commands.
+
+15 Set speed
+if 0 <= para <= 31, set t1=para, reset t2 to 125. 
+Else, set t2=para (for protracker).
+Older trackers don't ever change t2, but always set t1=para.
+Special value 0 is supposed to end the module with protracker.
+special case: several set speed commands in the same events. The later ones
+do take precedence upon the earlier ones if both are supposed to affect t1
+or t2. If one set speed command affects t1 and the other t2, the most likely
+guess is to set t1 and t2 accordingly, but you CAN'T be sure... you have to
+either provide some switch to change your player behavior according to the
+value you got, or to apply some heuristic to go on playing...
+
+Extended commands:
+-----------------
+14-0 Set filter	[not implemented in tracker]
+change the state of the amiga low-pass filter 
+
+14-1 fine portamento up
+like portamento up, except it occurs only at the first tick, this means the
+time the command is interpreted, not later as for portamento up.
+
+14-2 fine portamento down
+
+
+14-3 glissando control 
+If set (para != 0), following tone portamentos will round each value to the
+nearest entire note.
+
+14-4 set vibrato waveform 
+Acceptable range is 0-3: 0 is the default sine, 1 the square, and 2 the
+rampdown. Protracker docs speak of 3 being a random waveform, but I've
+yet to see it implemented ! Neither pt1-1, pt1-2, pt2-0 implement it.
+You're supposed to add 4 to control whether the viboffset is reset at 
+each note (if 4, not reset, but this looks buggy as hell to me...)
+
+14-5 set finetune
+set finetune for the current channel to the para value right away, instead of 
+the current sample finetune.
+
+14-6 Loop pattern
+if para == 0, set start of loop, else loop to loop start para times before
+playing on.
+This effect is channel-dependent, so you can use several channels and 
+interleave loops... 
+
+14-7 set tremolo waveform 
+Like set vibrato waveform.
+
+14-8 Reserved for future extensions
+
+14-9 Retrig note
+retrig note on para-th, 2para-th,... tick.
+
+14-10 fine volume slide up
+like volume up, except it occurs only once on the first tick
+
+14-11 fine volume slide down
+
+14-12 cut note
+set volume of current note to 0 on para-th tick
+
+14-13 delay note
+start note on para-th tick instead of now.
+
+14-14 delay pattern
+do process the same events again para times.
+Note that effects do proceed as usual.
+Delay pattern is a global effect.
+
+14-15 invert loop [not implemented in tracker]
+
+

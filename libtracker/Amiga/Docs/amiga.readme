@@ -1,0 +1,47 @@
+Update for release 4.12:
+ported Unix changes back to the amiga. Includes adding the speedmode option,
+and being more informative as far as the version number is concerned...
+I think I need to devise something for the handling of version numbers.
+
+Update for release 4.6:
+
+Mostly nothing has changed between 4.5 and 4.6...
+
+Actually tracker 4.0 was not really useable... it did have some SERIOUS bugs.
+
+Fixe up a stupid bug: the Quit menu item didn't work, but hanged the machine instead !
+Another stupid bug in the main.c code: I forgot to check for UI_QUIT returns, so clicking
+on the close window button from the gui startup `select song' requester was a sure way
+to lock tracker.
+
+added v39 newlook menus for those not using MagicMenus. More tricky than I thought: you
+need to use GTMN_FrontPen in the CreateMenus() call !
+
+added v39 code to set the busy pointer while the machine is not responding...
+
+added wb2cli code, so workbench tracker actually works now.
+
+--
+   March, the 2nd 1994
+--------------------------
+
+Well, this version of tracker works on the amiga too.
+I happened to have the source of tracker with me and my amiga
+less than the usual 300 km far from me.
+
+Astoundingly enough, it took me only 5 hours to bring tracker up to speed and
+running, except for some trivial bugs, and only about twenty lines to change
+in the usual tracker source. Of course, I cheated. Some people may remember
+a quite old project of mine on the amiga... I already had some code for the
+audio.device.
+
+Then I came back home and I implemented the two-tasks model described in
+amiga.tech. The end result runs much more satisfactorily and in the end,
+it depends even less on the main program being optimized.
+
+By the way, it should be a bit more difficult to port this tracker release
+to a version of amiga-unix, or you'll have to retrofit the whole user interface.
+I hope somebody will do it and send it back to me anyway. Thanks !
+
+	Marc Espie, december the 26th 1993
+

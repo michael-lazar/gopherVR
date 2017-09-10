@@ -1,0 +1,117 @@
+(The name is not a mispelling).
+
+- How to compile it ?
+Edit the Makefile and use make.
+
+- My compiler can't find stricmp.
+Replace it by strcasecmp (case independent comparison). Some config.h already
+have the
+#define stricmp strcasecmp
+seems not to be quite standard yet.
+
+- It isn't fast enough.
+If you can, try to coerce root into installing it under his name, with
+a setuid.. Then tracker will renice itself to -15, which should solve most
+of your problems. DON'T DO THAT !!! I was young and stupid when I
+suggested that... there are security holes bigger than the whole moon in
+that program, installed suid.
+On the sparcs, I've been able to check that gcc DEFINITELY outputs a better
+program than sun's own acc !!! (been able to output gslinger at 44Khz stereo
+on a sparc5, which sun's version was unable to achieve)
+
+- I can't get any sound out of my machine.
+Check that it is configured properly. Most sparcs/sgis have an independant
+software volume control. The sparc has a software switch between headphones
+and loudspeaker too. Get sure your audio output is getting where you want.
+Hps are not necessarily installed with audio. There are several ports to
+hpux working with various models of the audio hw. Your mileage may vary.
+
+- I still don't get any sound.
+Make sure you have some audio hardware.
+
+- I can't get it to compile on my silicon graphics.
+Maybe you don't have any audio software. If it doesn't find audio
+include files/libraries, that's a good bet.
+From Irix 5.3 on, the audio package has been rebundled BACK into the
+developper's package. Upgrading might be a solution.
+The other problem with sgi is that their standard make is not quite powerful
+enough to handle macro substitution inside macro substitution. Up to you to
+write a good Makefile (and maybe send it to me) or compile tracker by hand...
+Installing gnumake on your machine is also a solution.
+Don't forget to copy the Sgi/config.h to config.h, or else your modules will
+sure sound weird !
+
+- I can't get it to compile on my sparc.
+If you don't have acc (ansi c compiler), tracker also works ok with old cc 
+and gcc. Speed options may not be necessary on your machine, 
+but they help sparc 5/10/20 to output sound at higher frequencies.
+The fastest tracker yet has been built with gcc.
+Also, sun periodically change the audio include filename from sun/audioio.h
+to sys/audio.io.h to some other weird combination. Shoot them.
+
+- I can't get it to compile on my solaris sparc.
+You should use the special target `solaris' which is a full port to solaris 2.2
+by Dave Tiller.
+Also, sun periodically change the audio include filename from sun/audioio.h
+to sys/audio.io.h to some other weird combination. Shoot them.
+
+- I can't get it to compile on my PC with soundblaster.
+Perfectly normal. I don't have any PC to test it with, as the original PC
+code was written by someone else. I've tried to keep it mostly intact, but
+there might be some trivial mistake in soundblaster_audio.c.
+Also, you need to modify termio.c. I think it has to do with getche() or
+something like it, but I don't really want to know.
+Anyhow, if you write the necessary patch, please send it my way.
+
+- I can't get it to compile on my PC with linux.
+Ask hasvolai@cc.helsinki.fi (Hannu Savolainen).
+
+- I can't get it to compile on my NeXTstep machine.
+Ask Rolf Grossman...
+
+- I can't get it to work on my DECstation.
+The code use a package called AudioFile. It is a public domain audio package
+available from DEC crl.dec.com aka 192.58.206.2, /pub/DEC/AF.
+the software will run on a number of platforms: Sun/NeXT/SGI/DEC.
+ The AF_audio.c code sends the sound directly to the AudioFile server.
+ There is but a slight problem! It Seg Faults when closing the Audio
+connection...dunno why, haven't been able to get rid of it!
+ Uses 2 environment variables:
+ AUDIOFILE - the name of the audio server to connect to for mono
+playback. And for the Left Channel in stereo playback. eg. "machine:0"
+ AUDIORIGHT - the name of the audio server for the Right Channel when
+playing stereo.
+This code is only tested for DEC 5000/20, 5000/25, Ultrix 4.2, Ultrix 4.3....
+so I can't vouch for how well it'll work on other machines!!!!
+
+- I can't change the volume of the sound.
+That's intentional. There are other programs that do that quite well.
+What you really want is an audio control panel. There are some nifty ones
+around, just search carefully. There is no need for tracker to support variable
+volume.
+
+- The sound output seems hashed.
+Your machine isn't running fast enough for the quality you're trying to get.
+If you don't have stereo output, don't forget to specify mono.
+Get rid of oversample first, this is a big cpu-eater. Then get rid of -show
+as well. If that doesn't work, you'll have to revert to a smaller frequency.
+tracker is normally aware of the current frequency on the sgi and sparcs,
+so if you have a control panel that allows it, change the frequency. You don't
+have to restart tracker (usually).
+
+- There are some ``not supported'' messages from time to time.
+tracker doesn't support the whole set of protracker commands, so it tells
+you when it doesn't play something the way it's supposed to be played.
+
+- tracker stops when playing some files.
+Try -tolerant. If it still doesn't work, send a bug report.
+
+- This module doesn't sound like it should.
+Check that. be sure you were using the right player on an amiga. If you
+still have something weird, you may have a bug. Try e-mailing me.
+
+- when tracker exits, my terminal is in some funky mode. 
+Shouldn't happen anymore. It definitely did in some previous version.
+Send me some email !
+
+	Marc Espie (espie@ens.fr)

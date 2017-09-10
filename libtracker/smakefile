@@ -1,0 +1,54 @@
+# lattice lmkfile
+#OPTI = opt optinline optinlocal optcomp 10 optdepth 3 optrdepth 3 
+OPTI = opt optinline optinlocal
+#opti = 
+CC = sc
+#COPTS = streq math ieee debug full ignore 161
+COPTS= math ieee $(OPTI) ignore 161
+COPTS2 = math ieee $(OPTI) ignore 161
+OBJECTS = st_read.o commands.o automaton.o st_play.o open.o empty.o \
+tools.o dump_song.o setup_audio.o notes.o display.o autoinit.o tags.o prefs.o \
+amiga/ui.o amiga/client.o amiga/popen.o amiga/audio.o amiga/main.o \
+amiga/scroll_window.o amiga/events.o amiga/requester.o amiga/wb2cli.o \
+amiga/scroll.o amiga/info.o amiga/inhibit.o \
+amiga/server/smain.o amiga/server/sound.o amiga/server/timer.o
+
+
+SERVOBJECTS = amiga/server/smain.o amiga/server/sound.o amiga/server/timer.o
+
+all: config tracker #server
+
+config:
+   copy amiga/config.h config.h
+
+server: $(SERVOBJECTS)
+	sc link $(SERVOBJECTS) to $@
+
+
+tracker: $(OBJECTS)
+	sc link $(COPTS) $(OBJECTS) to $@ lib lib:reqtools.lib# memwatch.lib
+
+
+open.o: open.c
+   $(CC) $(COPTS) define COMPRESSION_FILE="s:compression_methods" open.c
+.c.o:
+	$(CC) $(COPTS) $*.c
+
+amiga/main.o: version.h
+
+amiga/ui.o: version.h
+
+amiga/server/smain.o: amiga/server/smain.c
+	sc NOSTACKCHECK $(COPTS2) $?
+
+amiga/server/sound.o: amiga/server/sound.c
+	sc NOSTACKCHECK $(COPTS2) $?
+
+amiga/server/timer.o: amiga/server/timer.c
+	sc NOSTACKCHECK $(COPTS2) $?
+
+clean:
+	delete $(OBJECTS) $(SERVOBJECTS)
+
+cleanserv:
+	delete $(SERVOBJECTS)

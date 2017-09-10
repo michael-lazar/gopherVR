@@ -1,0 +1,168 @@
+These notes are extracted from the protracker 1.2 source and other places.
+
+Counter goes 1 .. 2 ... currentspeed ? -> 0
+Actual commands occur for counter = 0, effects occur only for counter > 0.
+Big difference with Med there, except when in soundtracker compatibility mode.
+
+Samples:
+usual sample length unit is the 16 bit memory word, except for some real old
+tracker tunes, which use bytes for the replay offset ???
+Consequently, this should only occur with 15 instruments modules (not checked
+for in tracker). The actual check is whether rp_length + rp_offset is greater
+than length.  Usual protracker samples are 8-bit signed (dictated by the 
+amiga hardware).
+
+Finetune:
+it seems the stored frequencies are actually notes, i.e., they
+always correspond to the base frequency table.
+So what you do is convert the frequency to notes as usual, then
+use another frequency table according to the finetune setting.
+
+Arpeggio 1: on Counter % 3 ,
+	0 normal
+	1 +HI
+	2 +LO
+
+Portamento up 1/down 2: there is NO default value. Accordingly, 0 does nothing.
+Note that we ensure $71 <= period <= $358. And 0 <= volume <= 64
+
+Tone portamento 3/Tone porta+ vol slide 5: work exactly the same way except that
+5 doesn't have a rate, but use the previous rate.
+Various cases:
+- new note: porta to the new note with the given (or previous) rate.
+Start with the current period, not any previous goal or anything.
+- no new note: go on tone portamento, unless already finished. If needed,
+adjust rate on the fly.
+
+Gliss funk E3: snap the actual pitch to the nearest note. Don't store it.
+
+
+Fine porta up E1/Fine porta down E2/Fine volume up EA/Fine volume down EB:
+do just one change, on setup.
+
+Set speed: under protracker, 0 does stop.
+< 32 does a normal set counter.
+>=32 is a factor to get real speed from (default is 125), except for old
+tracker modules.
+what to do when there are several set speed command in the same line ?
+First, if all set_speed options are in the same mode (<32 for instance),
+only the last one applies.
+Opinions differs... it seems that even various incarnations of protracker
+don't do the same thing. tracker behavior changes according to the speedmode
+option:
+* old -> all set_speed just do a normal set counter.
+* finefirst -> only the >=32 command is heeded.
+* normalfirst -> only the < 32 command is heeded, AND finespeed is reset to 125
+* normal -> both commands are heeded.
+note that protracker behavior states that set_speed(<32) should reset finespeed
+to 125.
+
+
+Change volume B: the value is pure binary.
+
+Volume Slide A: delta = HI - LOW. No default value.
+The actual code does: HI == 0 ? -LOW : +HI
+
+Sample offset 9: take parameter x 256 and start from there (if
+para x 256 >= length, just don't play sample).
+
+Note cut EC/ Note Delay ED: occurs when counter = para
+
+---------
+Some comments about resampling:
+any profiler will tell you that tracker spends most of its time emulating
+the amiga hardware in resample.c (except on the amiga, of course).
+What can be done to alleviate the problem ?
+
+- on any machine that has got hw sufficiently similar to the amiga (at least
+four channels and independent replay speed), write routines similar to the
+amiga.
+
+
+- keep it simple... Even a stupid test might slow the routine down. Hence,
+the duplicated code according to oversample, the special `empty' sample with
+its special properties (samp->fix_length == 0 && samp->rp_start == NULL).
+
+As a consequence, new sample styles (like 16 bit samples) SHOULD be implemented
+as new types of commands like DO_NOTHING, PLAY, REPLAY (PLAY16 and REPLAY16
+come to mind), even though it WILL duplicate loads of code.
+
+Recently, the code has changed to allow for more than four channels. This incurs
+a slight overcost (two more additions), which is actually negligible for 
+oversampled replay, and has been deemed acceptable for simple replay.
+
+The lookup table for converting 0-64 volumes to a linear scale is a cheap way
+to allow for all sorts of manipulations on the sample volumes at a low cost,
+and also to use n-bit samples in an almost transparent way, even with n not
+being an integral multiple of 8.
+
+
+
+
+If your machine is REALLY slow, and uses ulaw, computing a complete lookup
+table (all 16384 values of it) might speed things up somewhat. Removing the
+oversampling test altogether might do it also. Then you can unroll the
+for(i = 0; i < number; i++) loop, not initialising value[LEFT_SIDE] and
+value[RIGHT_SIDE] to 0, but giving them their initial real value.
+If all that fails, you can still find a better compiler, check whether your
+audio bandwidth is not too limited, downgrading the audio output to a lower
+acceptable frequency (stuttering and outputting several times the same 
+sample is possible). Lastly, you can still go to assembly language...
+
+Some optimization has been added to resample/audio.c. Basically, I've checked
+where tracker was spending time, and I discovered that ALMOST all the time 
+was spent doing divisions/multiplications, like for primary, secondary.
+Instead of computing:
+realLeft = left*primary + right*secondary
+realRight = right*primary + left*secondary,
+
+doing
+sum = (left+right) * (primary+secondary)/2
+diff = (left-right) * (primary-secondary)/2
+realLeft = sum+diff
+realRight = sum-diff
+
+gains two multiplications ! Just realize that (primary+secondary)/2 and
+(primary-secondary)/2 don't change and can be precomputed.
+
+Apart from primitive architectures where multiplication and addition costs
+are the same, this gains a lot. On a sparc 5, I can now use -over 2 -freq 44 !
+
+The `Next Generation' will probably be output-size aware and not compute
+23 bits systematically, but ask what resolution the audio output uses,
+and output left/right samples with a given number of bits, stating the
+number of bits at the same time.
+
+---------
+Amiga HW details:
+
+Since part of the behavior of soundtracker-like programs depend heavily on the
+amiga audio hardware, it is only suitable that there be a description of this
+hardware here.
+
+The amiga has four completely independant audio channels, numbered from 0 to 3.
+Channel 0 and 3 are connected to the left-side stereo output, 1 and 2 to 
+the right-side---hence the strange numbering in soundtracker programs.
+
+Sound data is 8 bit signed in standard 2 complement (-128<=v<=127).
+
+The volume is also set independently from 0 to 64 (0<=v<=64). 
+There is no typo there ! In terms of the hardware, the 64 value means that the
+hardware dampening is disconnected.
+The volume is linear. Sample values as follows:
+Volume   db
+---------------
+64       0
+48       -2.5
+32       -6.0
+16       -12.0
+
+The sampling period is limited by the number of DMA cycles allocated to an 
+audio channel, and traditionally linked to the video frequency. The formulas 
+are of little interest. The result is used in notes.c for instance.
+
+Finally, the amiga features a low-pass filter that can be disconnected through
+software. The filter becomes active around 4KHz and gradually begins to attenuate
+the signal. Generally, you cannot hear frequencies higher than 7KHz.
+Most soundtrackers disable the low-pass filter, and use it only for special
+effects.

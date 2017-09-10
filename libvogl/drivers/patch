@@ -1,0 +1,952 @@
+*** X11.c	Thu Mar  2 12:02:08 1995
+--- X11danny.c	Thu Mar  2 12:21:06 1995
+***************
+*** 28,50 ****
+  #define MIN(x,y)	((x) < (y) ? (x) : (y))
+  #define MAX(x,y)	((x) > (y) ? (x) : (y))
+  #define	CMAPSIZE	256
+  #define	EV_MASK		KeyPressMask|ButtonReleaseMask|ExposureMask|ButtonPressMask
+  
+! static	int		maxw = -1, maxh = -1;
+  static	Window		winder;
+  static	Display		*display;
+! static	int		screen;
+! static	unsigned long	carray[CMAPSIZE];
+  static	Colormap	colormap;
+  
+  static	Drawable	theDrawable = -1;
+! static	GC		theGC;
+  static	XGCValues	theGCvalues;
+! static	Pixmap		bbuf;		/* Back buffer pixmap */
+! static	int		back_used = 0;	/* Have we backbuffered ? */
+  
+  static	XFontStruct	*font_id = (XFontStruct *)NULL;
+! XEvent			event;
+  
+  static	unsigned long	colour;
+  static	unsigned int	h, w;
+--- 28,52 ----
+  #define MIN(x,y)	((x) < (y) ? (x) : (y))
+  #define MAX(x,y)	((x) > (y) ? (x) : (y))
+  #define	CMAPSIZE	256
++ #define	MAX_PLANES	8
+  #define	EV_MASK		KeyPressMask|ButtonReleaseMask|ExposureMask|ButtonPressMask
+  
+! static	int			maxw = -1, maxh = -1;
+  static	Window		winder;
+  static	Display		*display;
+! static	int			screen;
+! static	unsigned long	carray [CMAPSIZE];
+  static	Colormap	colormap;
++ static	Visual		*pVis_visual;
+  
+  static	Drawable	theDrawable = -1;
+! static	GC			theGC;
+  static	XGCValues	theGCvalues;
+! static	Pixmap		bbuf;			/* Back buffer pixmap */
+! static	int			back_used = 0;	/* Have we backbuffered ? */
+  
+  static	XFontStruct	*font_id = (XFontStruct *)NULL;
+! XEvent				event;
+  
+  static	unsigned long	colour;
+  static	unsigned int	h, w;
+***************
+*** 104,118 ****
+  int
+  vo_xt_window(Display *dis, Window win, int xw, int xh)
+  {
+! 	int	backb, i, depth;
+! 	XSetWindowAttributes xswa;
+  
+! 	
+  	backb = (theDrawable == bbuf);
+  
+  	display = dis;
+  	winder = win;
+  	screen = DefaultScreen(display);
+  	depth = vdevice.depth = DefaultDepth(display, screen);
+  	theDrawable = winder;
+  
+--- 106,123 ----
+  int
+  vo_xt_window(Display *dis, Window win, int xw, int xh)
+  {
+! 	int			backb, depth;
+! 	XVisualInfo	Xvi_visual_info;
+! 	static unsigned long    s_rl_plane_mask [MAX_PLANES];
+! 	XColor		Xcl_tmp;
+  
+! 
+  	backb = (theDrawable == bbuf);
+  
+  	display = dis;
+  	winder = win;
+  	screen = DefaultScreen(display);
++ 	pVis_visual = DefaultVisual( display, screen );
+  	depth = vdevice.depth = DefaultDepth(display, screen);
+  	theDrawable = winder;
+  
+***************
+*** 120,156 ****
+  	w = xw;
+  	h = xh;
+  
+- 
+- 
+- 	colormap = DefaultColormap(display, screen);
+- /*	colormap = XCreateColormap(display, win, DefaultVisual(display, screen), AllocNone);
+- 	xswa.colormap = colormap;
+- 	XChangeWindowAttributes(display, winder, colormap, &xswa);
+- 	XInstallColormap(display, colormap);*/
+- 
+  	/*
+! 	 * Set our standard colors...
+  	 */
+! 	if (vdevice.depth == 1) {
+  		/*
+- 		 * Black and white - anything that's not black is white.
+- 		 */
+  		carray[0] = BlackPixel(display, screen);
+  		for (i = 1; i < CMAPSIZE; i++)
+  			carray[i] = WhitePixel(display, screen);
+! 	} else {
+! 		/*
+! 		 * Color, try to get our colors close to what's in the
+! 		 * default colormap.
+! 		 */
+! 		X11_mapcolor(0, 0, 0, 0);
+! 		X11_mapcolor(1, 255, 0, 0);
+! 		X11_mapcolor(2, 0, 255, 0);
+! 		X11_mapcolor(3, 255, 255, 0);
+! 		X11_mapcolor(4, 0, 0, 255);
+! 		X11_mapcolor(5, 255, 0, 255);
+! 		X11_mapcolor(6, 0, 255, 255);
+! 		X11_mapcolor(7, 255, 255, 255);
+  	}
+  
+  	if ((smallf = XGetDefault(display, me, "smallfont")) == (char *)NULL)
+--- 125,218 ----
+  	w = xw;
+  	h = xh;
+  
+  	/*
+! 	 * Are we on a B/W display?
+  	 */
+! 	if (vdevice.depth == 1) 
+! 	{
+! 		/* Black and white - anything that's not black is white. */
+  		/*
+  		carray[0] = BlackPixel(display, screen);
+  		for (i = 1; i < CMAPSIZE; i++)
+  			carray[i] = WhitePixel(display, screen);
+! 		*/
+! 		printf( "Sorry Dude, you can't Surf GopherSpaceVR in B/W\n" );
+! 		exit( 0 );
+! 	} 
+! 	else 
+! 	{
+! 	/*
+! 	 * Does this Server support PseudoColor or DirectColor ?
+! 	 */
+! 		if (!XMatchVisualInfo( display, screen, depth, PseudoColor,
+! 				&Xvi_visual_info))
+! 		{
+! 			if (!XMatchVisualInfo( display, screen, depth, DirectColor,
+! 				&Xvi_visual_info))
+! 			{
+! 				printf( "Sorry Dude, you are running a XServer that " );
+! 				printf( "doesn't support PseudoColor or DirectColor\n" );	
+! 				exit( 0 );
+! 			}
+! 			else
+! 			{
+! 	/*
+! 	 * We have at least DirectColor, but do we have a large enough CMAP?
+! 	 */
+! 				if ( CMAPSIZE > Xvi_visual_info.colormap_size )
+! 				{
+! 				printf( "Sorry Dude, you are running a XServer that " );
+! 				printf( "supports DirectColor but with less than %d colors\n", 
+! 							CMAPSIZE );
+! 				}
+! 			}
+! 		}
+! 		else
+! 		{
+! 	/*
+! 	 * We have PseudoColor, but do we have a large enough CMAP?
+! 	 */
+! 			if ( CMAPSIZE > Xvi_visual_info.colormap_size )
+! 			{
+! 				printf( "Sorry Dude, you are running a XServer that " );
+! 				printf( "supports PseudoColor but with less than %d colors\n",
+! 							CMAPSIZE );
+! 			}
+! 		}
+! 
+! 	/*
+! 	 * If we are here we support either PseudoColor or DirectColor and
+! 	 * have a large enougth CMAP
+! 	 */
+! 		colormap = XCreateColormap ( display, winder, pVis_visual, AllocNone );
+! 
+! 		if (!XAllocColorCells ( display, colormap, False, s_rl_plane_mask,
+! 				0, carray, CMAPSIZE ))
+! 		{
+! 			printf( "Couldn't get %d colors \n", CMAPSIZE ); exit( 0 );
+! 		}
+! 	
+! 	/*
+! 	 * By default only two colors are set, Black and White
+! 	 */
+!         Xcl_tmp.pixel = carray [0];  
+! 		Xcl_tmp.red = 0;
+! 		Xcl_tmp.green = 0;
+! 		Xcl_tmp.blue = 0;
+! 		Xcl_tmp.flags = DoRed | DoGreen | DoBlue;
+! 		XStoreColor( display, colormap, &Xcl_tmp );
+! 		/*XSetWindowColormap( display, winder, colormap );*/
+! 		XFlush(display);
+! 
+! 		Xcl_tmp.pixel = carray [1];
+! 		Xcl_tmp.red = 255 * 255;
+! 		Xcl_tmp.green = 255 * 255;
+! 		Xcl_tmp.blue = 255 * 255;
+! 		Xcl_tmp.flags = DoRed | DoGreen | DoBlue;
+! 		XStoreColor( display, colormap, &Xcl_tmp );
+! 		/*XSetWindowColormap( display, winder, colormap );*/
+! 		XFlush(display);
+! 
+  	}
+  
+  	if ((smallf = XGetDefault(display, me, "smallfont")) == (char *)NULL)
+***************
+*** 246,319 ****
+  int
+  X11_init( void )
+  {
+!      int					i;
+!      int		     x, y, prefx, prefy, prefxs, prefys;
+!      unsigned int	     bw, depth, mask;
+!      Window		     rootw, childw;
+!      char		     *av[2], name[128], *geom;
+!      
+!      XSetWindowAttributes    theWindowAttributes;
+!      XWindowAttributes	     retWindowAttributes;
+!      XSizeHints              theSizeHints;
+!      unsigned long           theWindowMask;
+!      XWMHints                theWMHints;
+  
+  
+!      if (use_toolkit_win)
+! 	  return(1);
+  
+!      av[0] = me;
+!      av[1] = (char *)NULL;
+  
+!      if ((display = XOpenDisplay((char *)NULL)) == (Display *)NULL) {
+! 	  fprintf(stderr,"%s: X11_init: can't connect to X server\n", me);
+! 	  exit(1);
+!      }
+!      
+!      screen = DefaultScreen(display);
+!      winder = RootWindow(display, screen);
+!      colormap = DefaultColormap(display, screen);
+!      depth = vdevice.depth = DefaultDepth(display, screen);
+!      
+!      /*
+!       * Set our standard colors...
+!       */
+!      if (vdevice.depth == 1) {
+! 	  /*
+! 	   * Black and white - anything that's not black is white.
+! 	   */
+! 	  carray[0] = BlackPixel(display, screen);
+! 	  for (i = 1; i < CMAPSIZE; i++)
+! 	       carray[i] = WhitePixel(display, screen);
+!      } else {
+! 	  /*
+! 	   * Color, try to get our colors close to what's in the
+! 	   * default colormap.
+! 	   */
+! 	  X11_mapcolor(0, 0, 0, 0);
+! 	  X11_mapcolor(1, 255, 0, 0);
+! 	  X11_mapcolor(2, 0, 255, 0);
+! 	  X11_mapcolor(3, 255, 255, 0);
+! 	  X11_mapcolor(4, 0, 0, 255);
+! 	  X11_mapcolor(5, 255, 0, 255);
+! 	  X11_mapcolor(6, 0, 255, 255);
+! 	  X11_mapcolor(7, 255, 255, 255);
+!      }
+!      
+!      getprefposandsize(&prefx, &prefy, &prefxs, &prefys);
+  
+!      /*
+!       * NEED TO USE XGRABPOINTER here???
+!       */
+!      XQueryPointer(display, winder, &rootw, &childw, &x, &y, &x, &y, &mask);
+!      
+!      if (childw == None)
+! 	  childw = rootw;
+  
+!      /*
+  	if (!XGetWindowAttributes(display, childw, &retWindowAttributes)) {
+! 	fprintf(stderr,"Can't get window attributes.");
+! 	exit(1);
+  	}
+  
+  	x = retWindowAttributes.x;
+--- 308,418 ----
+  int
+  X11_init( void )
+  {
+! 	int						x, y, prefx, prefy, prefxs, prefys;
+! 	unsigned int			bw, depth, mask;
+! 	Window					rootw, childw;
+! 	char					*av[2], name[128], *geom;
+! 	XVisualInfo 			Xvi_visual_info;
+! 	static unsigned long    s_rl_plane_mask [MAX_PLANES];
+! 	XColor      			Xcl_tmp;
+! 	XSetWindowAttributes    theWindowAttributes;
+! 	XWindowAttributes		retWindowAttributes;
+!     XSizeHints              theSizeHints;
+!     unsigned long           theWindowMask;
+! 	XWMHints                theWMHints;
+  
+  
+! 	if (use_toolkit_win)
+! 		return(1);
+  
+! 	av[0] = me;
+! 	av[1] = (char *)NULL;
+  
+! 	if ((display = XOpenDisplay((char *)NULL)) == (Display *)NULL) {
+! 		fprintf(stderr,"%s: X11_init: can't connect to X server\n", me);
+! 		exit(1);
+! 	}
+  
+! 	screen = DefaultScreen(display);
+! 	pVis_visual = DefaultVisual( display, screen );
+! 	winder = RootWindow(display, screen);
+! 	depth = vdevice.depth = DefaultDepth(display, screen);
+  
+! 
+! 
+!     /*
+!      * Are we on a B/W display?
+!      */
+!     if (vdevice.depth == 1) 
+!     {
+!         /* Black and white - anything that's not black is white. */
+!         /*
+!         carray[0] = BlackPixel(display, screen);
+!         for (i = 1; i < CMAPSIZE; i++)
+!             carray[i] = WhitePixel(display, screen);
+!         */
+!         printf( "Sorry Dude, you can't Surf GopherSpaceVR in B/W\n" );
+!         exit( 0 );
+!     } 
+!     else 
+!     {
+!     /*
+!      * Does this Server support PseudoColor or DirectColor ?
+!      */
+!         if (!XMatchVisualInfo( display, screen, depth, PseudoColor,
+!                 &Xvi_visual_info))
+!         {
+!             if (!XMatchVisualInfo( display, screen, depth, DirectColor,
+!                 &Xvi_visual_info))
+!             {
+!                 printf( "Sorry Dude, you are running a XServer that " );
+!                 printf( "doesn't support PseudoColor or DirectColor\n" );   
+!                 exit( 0 );
+!             }
+!             else
+!             {
+!     /*
+!      * We have at least DirectColor, but do we have a large enough CMAP?
+!      */
+!                 if ( CMAPSIZE > Xvi_visual_info.colormap_size )
+!                 {
+!                 printf( "Sorry Dude, you are running a XServer that " );
+!                 printf( "supports DirectColor but with less than %d colors\n", 
+!                             CMAPSIZE );
+!                 }
+!             }
+!         }
+!         else
+!         {
+!     /*
+!      * We have PseudoColor, but do we have a large enough CMAP?
+!      */
+!             if ( CMAPSIZE > Xvi_visual_info.colormap_size )
+!             {
+!                 printf( "Sorry Dude, you are running a XServer that " );
+!                 printf( "supports PseudoColor but with less than %d colors\n",
+!                             CMAPSIZE );
+!             }
+!         }
+! 	}
+! 
+! 
+! 
+! 
+! 	getprefposandsize(&prefx, &prefy, &prefxs, &prefys);
+! 
+! 	/*
+! 	 * NEED TO USE XGRABPOINTER here???
+! 	 */
+! 	XQueryPointer(display, winder, &rootw, &childw, &x, &y, &x, &y, &mask);
+! 
+! 	if (childw == None)
+! 		childw = rootw;
+! 
+! /*
+  	if (!XGetWindowAttributes(display, childw, &retWindowAttributes)) {
+! 		fprintf(stderr,"Can't get window attributes.");
+! 		exit(1);
+  	}
+  
+  	x = retWindowAttributes.x;
+***************
+*** 331,523 ****
+  	);
+  */
+  
+!      XGetGeometry(display, childw, &rootw, &x, &y, &w, &h, &bw, &depth);
+  
+!      theWindowAttributes.backing_store = WhenMapped;
+!      theWindowAttributes.save_under = True;
+!      theWindowAttributes.border_pixel = carray[1];
+  
+  
+!      /*
+!       * See if there is something in the .Xdefaults file regarding
+!       * VOGL/VOGLE.
+!       */
+  
+!      if ((smallf = XGetDefault(display, me, "smallfont")) == (char *)NULL)
+! 	  smallf = SMALLFONT;
+  
+!      if ((largef = XGetDefault(display, me, "largefont")) == (char *)NULL)
+! 	  largef = LARGEFONT;
+  
+!      geom = XGetDefault(display, me, "Geometry");
+  
+!      if (geom != (char *)NULL) {
+! 	  mask = XParseGeometry(geom, &x, &y, &w, &h);
+  
+! 	  if (mask & XValue)
+! 	       theSizeHints.flags |= USPosition;
+  
+! 	  if (mask & YValue)
+! 	       theSizeHints.flags |= USPosition;
+! 	  
+! 	  if (mask & WidthValue)
+! 	       theSizeHints.flags |= USSize;
+! 	  
+! 	  if (mask & HeightValue)
+! 	       theSizeHints.flags |= USSize;
+  
+! 	  if (mask & XNegative)
+! 	       x = DisplayWidth(display, screen) - 2*bw - w + x;
+! 	  
+! 	  if (mask & YNegative)
+! 	       y = DisplayHeight(display, screen) - 2*bw - h + y;
+! 	  
+!      } else
+! 	  theSizeHints.flags = PPosition | PSize;
+!      
+!      if (prefx > -1) {
+! 	  x = prefx;
+! 	  y = prefy;
+!      }
+!      
+!      if (prefxs > -1) {
+! 	  w = prefxs;
+! 	  h = prefys;
+!      }
+!      
+!      if (bw == 0)
+! 	  bw = 4;
+!      
+!      x -= bw;
+!      y -= bw;
+!      
+!      if (x <= 0)
+! 	  x = 0;
+!      
+!      if (y <= 0)
+! 	  y = 0;
+!      
+!      w -= 4 * bw;
+!      h -= 4 * bw;
+!      
+!      theWindowMask = CWBorderPixel|CWBackingStore;
+!      
+!      winder = XCreateWindow(display,
+! 			    winder,
+! 			    x, y,
+! 			    w, h,
+! 			    bw,
+! 			    (int)vdevice.depth,
+! 			    InputOutput,
+! 			    CopyFromParent,
+! 			    theWindowMask,
+! 			    &theWindowAttributes
+! 			    );
+!      
+!      theSizeHints.x = x;
+!      theSizeHints.y = y;
+!      theSizeHints.width = w;
+!      theSizeHints.height = h;
+!      
+  #ifndef VOGLE
+!      if (vdevice.wintitle)
+! 	  strcpy(name, vdevice.wintitle);
+!      else
+! 	  sprintf(name, "%s %d (win id 0x%x)", me, getpid(), winder);
+  #else
+!      sprintf(name, "%s %d (win id 0x%x)", me, getpid(), winder);
+  #endif
+!      
+!      XSetStandardProperties(display,
+! 			    winder,
+! 			    name,
+! 			    name,
+! 			    None,
+! 			    av,
+! 			    1,
+! 			    &theSizeHints
+! 			    );
+!      
+!      theWMHints.initial_state = NormalState;
+!      theWMHints.input = True;
+!      theWMHints.flags = StateHint | InputHint;
+!      XSetWMHints(display, winder, &theWMHints);
+!      
+!      XSelectInput(display, winder, EV_MASK);
+!      
+!      theDrawable = (Drawable)winder;
+!      
+!      /*
+!       * Create Graphics Context and Drawable
+!       */
+!      theGC = XDefaultGC(display, screen);
+!      theGCvalues.graphics_exposures = False;
+!      theGCvalues.cap_style = CapButt;
+!      XChangeGC(display, theGC, GCGraphicsExposures|GCCapStyle, &theGCvalues);
+!      theDrawable = (Drawable)winder;
+!      X11_color(0);
+!      
+!      XMapRaised(display, winder);
+!      XFlush(display);
+!      
+!      /*
+!       * Wait for Exposure event.
+!       */
+!      do {
+! 	  XNextEvent(display, &event);
+!      } while (event.type != Expose && event.type != MapNotify);
+!      
+!      /*
+!       * Set the input Focus to us.
+!       
+!       if (prefx == -1 && prefxs == -1)
+!       XSetInputFocus(display, winder, RevertToParent, CurrentTime);
+!       */
+!      
+!      /*
+!       *  Let VOGL/VOGLE know about the window size.
+!       *  (We may have been resized..... )
+!       */
+!      if (!XGetWindowAttributes(display, winder, &retWindowAttributes)) {
+! 	  fprintf(stderr,"Can't get window attributes.");
+! 	  exit(1);
+!      }
+!      
+!      x = retWindowAttributes.x;
+!      y = retWindowAttributes.y;
+!      w = retWindowAttributes.width;
+!      h = retWindowAttributes.height;
+!      
+!      XTranslateCoordinates(display,
+! 			   winder, retWindowAttributes.root,
+! 			   0, 0,
+! 			   &x, &y,
+! 			   &rootw
+! 			   );
+!      
+!      
+!      
+!      
+!      vdevice.sizeX = vdevice.sizeY = MIN(h, w);
+!      vdevice.sizeSx = w;
+!      vdevice.sizeSy = h;
+!      
+!      
+!      /*
+!       * these new settings give us panaramic views
+!       */
+!      /*
+! 	vdevice.sizeX = theSizeHints.width;
+! 	vdevice.sizeY = theSizeHints.height;
+! 	vdevice.sizeSx = vdevice.sizeSy = theSizeHints.width;
+! 	*/
+!      
+!      if (back_used && (maxw < w || maxh < h)) {
+! 	  back_used = 0;
+! 	  X11_backbuf();
+!      }
+!      
+!      return(1);
+  }
+  
+  
+--- 430,638 ----
+  	);
+  */
+  
+! 	XGetGeometry(display, childw, &rootw, &x, &y, &w, &h, &bw, &depth);
+  
+! 	theWindowAttributes.backing_store = WhenMapped;
+! 	theWindowAttributes.save_under = True;
+! 	theWindowAttributes.border_pixel = carray[1];
+  
+  
+! 	/*
+! 	 * See if there is something in the .Xdefaults file regarding
+! 	 * VOGL/VOGLE.
+! 	 */
+  
+! 	if ((smallf = XGetDefault(display, me, "smallfont")) == (char *)NULL)
+! 		smallf = SMALLFONT;
+  
+! 	if ((largef = XGetDefault(display, me, "largefont")) == (char *)NULL)
+! 		largef = LARGEFONT;
+  
+! 	geom = XGetDefault(display, me, "Geometry");
+  
+! 	if (geom != (char *)NULL) {
+! 		mask = XParseGeometry(geom, &x, &y, &w, &h);
+  
+! 		if (mask & XValue)
+! 			theSizeHints.flags |= USPosition;
+  
+! 		if (mask & YValue)
+! 			theSizeHints.flags |= USPosition;
+  
+! 		if (mask & WidthValue)
+! 			theSizeHints.flags |= USSize;
+! 
+! 		if (mask & HeightValue)
+! 			theSizeHints.flags |= USSize;
+! 
+! 		if (mask & XNegative)
+! 			 x = DisplayWidth(display, screen) - 2*bw - w + x;
+! 
+! 		if (mask & YNegative)
+! 			y = DisplayHeight(display, screen) - 2*bw - h + y;
+! 
+! 	} else
+! 		theSizeHints.flags = PPosition | PSize;
+! 
+! 	if (prefx > -1) {
+! 	        x = prefx;
+! 	        y = prefy;
+! 	}
+! 
+! 	if (prefxs > -1) {
+! 	        w = prefxs;
+! 	        h = prefys;
+! 	}
+! 
+! 	if (bw == 0)
+! 		bw = 4;
+! 
+! 	x -= bw;
+! 	y -= bw;
+! 
+! 	if (x <= 0)
+! 		x = 0;
+! 
+! 	if (y <= 0)
+! 		y = 0;
+! 
+! 	w -= 4 * bw;
+! 	h -= 4 * bw;
+! 
+! 	theWindowMask = CWBorderPixel|CWBackingStore;
+! 
+! 
+! 	winder = XCreateWindow( display, winder, x, y, w, h, bw,
+! 							(int)vdevice.depth, InputOutput, CopyFromParent,
+! 							theWindowMask, &theWindowAttributes );
+! 
+! 	theSizeHints.x = x;
+! 	theSizeHints.y = y;
+! 	theSizeHints.width = w;
+! 	theSizeHints.height = h;
+! 
+  #ifndef VOGLE
+! 	if (vdevice.wintitle)
+! 		strcpy(name, vdevice.wintitle);
+! 	else
+! 		sprintf(name, "%s %d (win id 0x%x)", me, getpid(), winder);
+  #else
+! 	sprintf(name, "%s %d (win id 0x%x)", me, getpid(), winder);
+  #endif
+! 
+! 	XSetStandardProperties( display, winder, name, 
+! 							 name, None, av, 1, &theSizeHints );
+! 
+! 
+!     /*
+!      * If we are here we support either PseudoColor or DirectColor and
+!      * have a large enougth CMAP
+!      */
+!     colormap = XCreateColormap ( display, winder, pVis_visual, AllocNone );
+! 
+! 	if (!XAllocColorCells ( display, colormap, False, s_rl_plane_mask,
+! 			0, carray, CMAPSIZE ))
+! 	{
+! 		printf( "Couldn't get %d colors \n", CMAPSIZE ); exit( 0 );
+! 	}
+! 
+!     /*
+!      * By default only two colors are set, Black and White
+!      */
+! 	Xcl_tmp.pixel = carray [0];  
+! 	Xcl_tmp.red = 0;
+! 	Xcl_tmp.green = 0;
+! 	Xcl_tmp.blue = 0;
+! 	Xcl_tmp.flags = DoRed | DoGreen | DoBlue;
+! 	XStoreColor( display, colormap, &Xcl_tmp );
+! 	/*XSetWindowColormap( display, winder, colormap );*/
+! 	XFlush(display);
+! 
+! 	Xcl_tmp.pixel = carray [1];
+! 	Xcl_tmp.red = 255 * 255;
+! 	Xcl_tmp.green = 255 * 255;
+! 	Xcl_tmp.blue = 255 * 255;
+! 	Xcl_tmp.flags = DoRed | DoGreen | DoBlue;
+! 	XStoreColor( display, colormap, &Xcl_tmp );
+! 	/*XSetWindowColormap( display, winder, colormap );*/
+! 	XFlush(display);
+! 
+! 	theWMHints.initial_state = NormalState;
+! 	theWMHints.input = True;
+! 	theWMHints.flags = StateHint | InputHint;
+! 	XSetWMHints(display, winder, &theWMHints);
+! 
+! 	XSelectInput(display, winder, EV_MASK);
+! 
+! 	theDrawable = (Drawable)winder;
+! 
+! 	/*
+! 	 * Create Graphics Context and Drawable
+! 	 */
+! 	theGC = XDefaultGC(display, screen);
+! 	theGCvalues.graphics_exposures = False;
+! 	theGCvalues.cap_style = CapButt;
+! 	XChangeGC(display, theGC, GCGraphicsExposures|GCCapStyle, &theGCvalues);
+! 	theDrawable = (Drawable)winder;
+! 	X11_color(0);
+! 
+! 	XMapRaised(display, winder);
+! 	XFlush(display);
+! 
+! 	/*
+! 	 * Wait for Exposure event.
+! 	 */
+! 	do {
+! 		XNextEvent(display, &event);
+! 	} while (event.type != Expose && event.type != MapNotify);
+! 
+! 	/*
+! 	 * Set the input Focus to us.
+! 
+!         if (prefx == -1 && prefxs == -1)
+!                 XSetInputFocus(display, winder, RevertToParent, CurrentTime);
+! 	 */
+! 
+! 	/*
+! 	 *  Let VOGL/VOGLE know about the window size.
+! 	 *  (We may have been resized..... )
+! 	 */
+! 	if (!XGetWindowAttributes(display, winder, &retWindowAttributes)) {
+! 		fprintf(stderr,"Can't get window attributes.");
+! 		exit(1);
+! 	}
+! 
+! 	x = retWindowAttributes.x;
+! 	y = retWindowAttributes.y;
+! 	w = retWindowAttributes.width;
+! 	h = retWindowAttributes.height;
+! 
+! 	XTranslateCoordinates( display, winder, retWindowAttributes.root,
+! 							0, 0, &x, &y, &rootw );
+! 
+! 
+! 	
+! 
+!     vdevice.sizeX = vdevice.sizeY = MIN(h, w);
+!     vdevice.sizeSx = w;
+!     vdevice.sizeSy = h;
+! 
+! 
+! 	/*
+! 	 * these new settings give us panaramic views
+! 	 */
+! /*
+!     vdevice.sizeX = theSizeHints.width;
+!     vdevice.sizeY = theSizeHints.height;
+!     vdevice.sizeSx = vdevice.sizeSy = theSizeHints.width;
+! */
+! 
+! 	if (back_used && (maxw < w || maxh < h)) {
+! 		back_used = 0;
+! 		X11_backbuf();
+! 	}
+! 
+! 	return(1);
+  }
+  
+  
+***************
+*** 529,535 ****
+   *
+   *	cleans up before returning the window to normal.
+   */
+- 
+  int
+  X11_exit( void )
+  {
+--- 644,649 ----
+***************
+*** 747,755 ****
+  int
+  X11_color(int ind)
+  {
+! 	colour = carray[ind];
+! 	XSetForeground(display, theGC, colour);
+! 
+  	return( 0 );
+  }
+  
+--- 861,867 ----
+  int
+  X11_color(int ind)
+  {
+! 	XSetForeground( display, theGC, carray [ind] );
+  	return( 0 );
+  }
+  
+***************
+*** 765,801 ****
+  int
+  X11_mapcolor(int i, int r, int g, int b)
+  {
+! 	int	stat;
+! 	XColor	tmp;
+  
+  	if (i >= CMAPSIZE)
+  		return(-1);
+  
+- 
+  	/*
+! 	 * For Black and White.
+! 	 * If the index is 0 and r,g,b != 0 then we are remapping black.
+! 	 * If the index != 0 and r,g,b == 0 then we make it black.
+  	 */
+! 	if (vdevice.depth == 1) {
+! 		if (i == 0 && (r != 0 || g != 0 || b != 0)) 
+! 			carray[i] = WhitePixel(display, screen);
+! 		else if (i != 0 && r == 0 && g == 0 && b == 0)
+! 			carray[i] = BlackPixel(display, screen);
+! 	} else {
+! 		tmp.red = (unsigned short)(r / 255.0 * 65535);
+! 		tmp.green = (unsigned short)(g / 255.0 * 65535);
+! 		tmp.blue = (unsigned short)(b / 255.0 * 65535);
+! 		tmp.flags = 0;
+! 		tmp.pixel = (unsigned long)i;
+  
+! 		if ((stat = XAllocColor(display, colormap, &tmp)) == 0) {
+! 			fprintf(stderr, "XAllocColor failed for %d,%d,%d (status = %d)\n", r,g,b,stat);
+! 			/*exit(1);*/
+! 		}
+! 		carray[i] = tmp.pixel;
+  	}
+  
+  	XFlush(display);
+  	return(0);
+  }
+--- 877,906 ----
+  int
+  X11_mapcolor(int i, int r, int g, int b)
+  {
+! 	XColor	Xcl_tmp;
+  
+  	if (i >= CMAPSIZE)
+  		return(-1);
+  
+  	/*
+! 	 * Sorry dude, you can't remap 0 or 1 (they are reserved)
+  	 */
+! 	if ( (0 == i) || (1 == i) ) 
+! 		return( -1 );
+  
+! 	if ( 2 == i )
+! 	{
+! 		printf( "got it!\n" );
+  	}
+  
++ 	Xcl_tmp.pixel = (unsigned long) carray [i];
++ 	Xcl_tmp.red = (unsigned short)(r / 255.0 * 65535);
++ 	Xcl_tmp.green = (unsigned short)(g / 255.0 * 65535);
++ 	Xcl_tmp.blue = (unsigned short)(b / 255.0 * 65535);
++ 	Xcl_tmp.flags = DoRed | DoGreen | DoBlue; 
++ 
++ 	XStoreColor( display, colormap, &Xcl_tmp );
++ 	/*XSetWindowColormap( display, winder, colormap );*/
+  	XFlush(display);
+  	return(0);
+  }
+***************
+*** 1313,1316 ****
+--- 1418,1451 ----
+  	vdevice.dev = X11dev;
+  
+  	return( 0 );
++ }
++ 
++ 
++ int
++ XDanny( void )
++ {
++ 	XSetWindowColormap( display, winder, colormap );
++ }
++ 
++ int
++ XDanny2( void )
++ {
++ 	XColor tmp;
++ 
++ 	tmp.pixel = (unsigned long) 2;
++ 	XQueryColor( display, colormap, &tmp );
++ 
++ 	printf( "%d %d %d\n", tmp.red, tmp.green, tmp.blue );
++ }
++ 
++ 
++ void
++ V_FreeColors( int iCar_index )
++ {
++ 	unsigned long	pixels [1];
++ 
++ 
++ 	pixels [0] = (unsigned long) carray [iCar_index];
++ 
++ 	XFreeColors( display, colormap, pixels, 1, 0 );
+  }

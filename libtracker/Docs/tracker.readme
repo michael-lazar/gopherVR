@@ -1,0 +1,8 @@
+Short: portable ST/PT player 
+Type: mus/play
+Uploader: Marc.Espie@ens.fr
+
+This is a fully-fledge protracker/soundtracker module player that is
+mostly portable. It now runs succesfully on the AMIGA, silicon graphics,
+sparc, linux, hpux, dec, NeXT...
+This version includes full support for the AMIGA and a man page.

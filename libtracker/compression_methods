@@ -1,0 +1,18 @@
+# Unix compression table
+.czip    unczip %s
+.gz      gzip -dc %s
+# in case gzip is fully installed
+.z       gzip -dc %s
+# else
+#.Z      zcat %s
+.s       shorten -x %s -
+.shn     shorten -x %s -
+.zoo     zoo xpq %s
+# for the amiga
+#.lzh    lha -q p "%s"
+#.lha    lha -q p "%s"
+# unix
+.lzh     lha pq %s
+.lha     lha pq %s
+.zip     unzip -pq %s
+.arc     arc pn %s

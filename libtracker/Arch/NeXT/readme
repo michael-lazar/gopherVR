@@ -1,0 +1,27 @@
+This is the NeXTstep port of tracker. It was originally done on m68k
+hardware, but other people have tried it on the other NeXTStep platforms
+as well (and submitted patches if necessary ;)).
+
+These are the main changes I had to make, in case someone is interested:
+
+* I added support for sgtty ("old" BSD) style terminal settings to Unix/ui.c.
+  I have also cleaned this up and made it architecture independent. I have
+  verified that it works on Suns, too. See Arch/config.h.sample for the way
+  to use it.
+* I created a new variable 'play_ahead' that tells how many buffer blocks
+  are queued before waiting for the sound to actually play. The buffering 
+  is required to ensure continous play, even if the program is not running 
+  continously (like when you're actuallay working with the computer ;-)) 
+  I could have made the value settable with a command line option, but this
+  would be architecture dependent. Instead it uses the environment variable
+  BUFFER_BLOCKS right now.
+  just defaulted right now.
+* Added call to SNDSwapSoundToHost before actually playing the sound, so
+  it should work on NS/intel now.
+* Because of quite recent changes to the Makefile it should even work with
+  NeXT's native make (at least it does for me ;))
+
+I think that's it. If you have any questions, ask away. My email adress is
+grossman@informatik.tu-muenchen.de.
+
+Rolf

@@ -1,0 +1,34 @@
+		   Gopher VR Toolkit Source Release
+                   --------------------------------
+
+This is the source code for Gopher VR.
+
+**********************************************************************
+********************     I M P O R T A N T !      ********************
+You will need to make a symbolic link to the regular Unix gopher
+source tree like this:
+
+  ln -s /home/arcwelder/lindner/gopherX_X_X ./gopher
+
+**********************************************************************
+
+libtracker/
+    Audio tools for playing soundtracker/noisetracker modules
+
+libvogl/
+    Very Ordinary GL, a library for doing 3D fast
+
+gophervr/
+    Source code for GopherVR
+
+lib/
+    Where compiled libraries are installed
+
+bin/
+    Where compiled programs are installed
+
+
+
+--
+Paul Lindner
+lindner@inuus.com
